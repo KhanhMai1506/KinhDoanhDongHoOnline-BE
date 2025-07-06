@@ -15,5 +15,15 @@ class KhachHangSeeding extends Seeder
     {
         DB::table('khach_hangs')->delete();
         DB::table('khach_hangs')->truncate();
+        DB::table('khach_hangs')->insert([
+            [
+                'hinh_anh'     =>   '',
+                'ho_va_ten'     =>  'Nguyễn Đức Mạnh',
+                'email'         =>  'dm@gmail.com',
+                'so_dien_thoai' =>  '0453699217',
+                'password'      =>  bcrypt('123456'),
+                'is_active'     =>  1,
+            ],
+        ]);
     }
 }

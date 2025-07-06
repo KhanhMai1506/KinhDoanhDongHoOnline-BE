@@ -13,21 +13,15 @@ return new class extends Migration
     {
         Schema::create('san_phams', function (Blueprint $table) {
             $table->id();
+            $table->integer('id_danh_muc')->nullable();
             $table->string('ten_san_pham');
-            $table->string('slug_san_pham');
             $table->integer('so_luong')->default(0);
             $table->text('hinh_anh');
             $table->integer('tinh_trang');
-            $table->string('mo_ta_ngan');
-            $table->longText('mo_ta_chi_tiet');
+            $table->longText('mo_ta_ngan');
             $table->integer('gia_ban');
-            $table->integer('gia_khuyen_mai')->nullable();
-            $table->integer('id_danh_muc')->nullable();
-            $table->integer('id_dai_ly')->nullable();
             $table->integer('is_noi_bat')->default(0);
             $table->integer('is_flash_sale')->default(0);
-            $table->integer('sao_danh_gia');
-            $table->string('tag');
             $table->timestamps();
         });
     }
