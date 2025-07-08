@@ -26,7 +26,7 @@ class DiaChiSeeding extends Seeder
             ],
             [
                 'dia_chi'           =>  '32 Hùng Vương, Đà Nẵng',
-                'ten_nguoi_nhan'    =>  '0857415456',
+                'ten_nguoi_nhan'    =>  'Đức Mạnh',
                 'so_dien_thoai'     =>  '0857415456',
                 'id_khach_hang'     =>  1,
             ],
