@@ -38,4 +38,4 @@ Route::get('/san-pham-tu-danh-muc/{id}', [SanPhamController::class, 'laySanPhamT
 Route::get('/chi-tiet-san-pham/{id}', [SanPhamController::class, 'layThongTinSanPham']);
 Route::get('/san-pham-de-xuat/{id_san_pham}', [SanPhamController::class, 'laySanPhamDeXuat']);
 
-
+Route::post('/san-pham/tim-kiem', [SanPhamController::class, 'searchProducts']);

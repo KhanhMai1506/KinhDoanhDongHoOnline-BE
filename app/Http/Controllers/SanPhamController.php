@@ -69,4 +69,14 @@ class SanPhamController extends Controller
             'data'   => $data
         ]);
     }
+
+    public function searchProducts(Request $request){
+        $noi_dung_tim = '%'. $request->noi_dung_tim . '%';
+        $data   =  SanPham::where('ten_san_pham', 'like', $noi_dung_tim)
+                            ->orWhere('mo_ta_ngan', 'like', $noi_dung_tim)
+                            ->get();
+        return response()->json([
+            'data'  => $data
+        ]);
+    }
 }
