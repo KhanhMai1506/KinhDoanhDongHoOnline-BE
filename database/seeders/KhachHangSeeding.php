@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class KhachHangSeeding extends Seeder
 {
@@ -21,7 +22,7 @@ class KhachHangSeeding extends Seeder
                 'ho_va_ten'     =>  'Nguyễn Đức Mạnh',
                 'email'         =>  'dm@gmail.com',
                 'so_dien_thoai' =>  '0453699217',
-                'password'      =>  bcrypt('123456'),
+                'password' => Hash::make('123456'),
                 'is_active'     =>  1,
             ],
         ]);

@@ -8,7 +8,7 @@ use App\Http\Controllers\SanPhamController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
+Route::post('/khach-hang/doi-mat-khau', [KhachHangController::class, 'doiMatKhau']);
 Route::post('/khach-hang/dang-nhap', [KhachHangController::class, 'dangNhap']);
 Route::post('/khach-hang/dang-ky', [KhachHangController::class, 'dangKy']);
 Route::post('/khach-hang/kich-hoat', [KhachHangController::class, 'kichHoat']);

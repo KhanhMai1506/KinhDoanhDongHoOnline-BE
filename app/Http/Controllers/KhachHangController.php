@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class KhachHangController extends Controller
 {
@@ -324,5 +325,24 @@ class KhachHangController extends Controller
                 'message'   =>  'Liên kết không tồn tại'
             ]);
         }
+    }
+
+    public function doiMatKhau(KhachHangDoiMatKhauRequest $request) {
+        $khach_hang = Auth::guard('sanctum')->user();
+
+        if (!Hash::check($request->current_password, $khach_hang->password)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Mật khẩu cũ không chính xác'
+            ], 400);
+        }
+        
+        $khach_hang->password = Hash::make($request->new_password);
+        $khach_hang->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Đổi mật khẩu thành công'
+        ]);
     }
 }

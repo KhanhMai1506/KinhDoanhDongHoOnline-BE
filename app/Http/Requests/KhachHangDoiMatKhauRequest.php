@@ -14,18 +14,20 @@ class KhachHangDoiMatKhauRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id'            =>  'required|exists:khach_hangs,hash_reset',
-            'password'      =>  'required|min:6|max:30',
-            're_password'   =>  'required|same:password',
+            'current_password' => 'required',
+            'new_password'      =>  'required|min:6',
+            'confirm_new_password'   =>  'required|same:new_password',
         ];
     }
 
     public function messages()
     {
         return [
-            'id.*'            =>  'Tài khoản không tồn tại',
-            'password.*'      =>  'Mật khẩu phải từ 6 đến 30 ký tự',
-            're_password.*'   =>  'Mật khẩu nhập lại không giống',
+            'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại',
+            'new_password.required'     => 'Vui lòng nhập mật khẩu mới',
+            'new_password.min'          => 'Mật khẩu mới phải có ít nhất 6 ký tự',
+            'confirm_new_password.required' => 'Vui lòng nhập lại mật khẩu mới',
+            'confirm_new_password.same'     => 'Mật khẩu nhập lại không khớp',
         ];
     }
 }
