@@ -5,6 +5,10 @@ use App\Http\Controllers\DiaChiController;
 use App\Http\Controllers\GioHangController;
 use App\Http\Controllers\KhachHangController;
 use App\Http\Controllers\SanPhamController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ChiTietDonHangController;
+use App\Http\Controllers\MaGiamGiaController;
+use App\Http\Controllers\DonHangController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,15 +23,18 @@ Route::get('/khach-hang/dia-chi/data', [DiaChiController::class, 'getData'])->mi
 Route::post('/khach-hang/dia-chi/create', [DiaChiController::class, 'store'])->middleware("KhachHangMiddle");
 Route::post('/khach-hang/dia-chi/update', [DiaChiController::class, 'update'])->middleware("KhachHangMiddle");
 Route::post('/khach-hang/dia-chi/delete', [DiaChiController::class, 'destroy'])->middleware("KhachHangMiddle");
-Route::get('/kiem-tra-khachhang', [KhachHangController::class, 'kiemTraKhachHang']);
+Route::get('/kiem-tra-khach-hang', [KhachHangController::class, 'kiemTraKhachHang']);
 
 Route::post('/khach-hang/dang-xuat', [KhachHangController::class, 'logout']);
 Route::post('/khach-hang/dang-xuat-all', [KhachHangController::class, 'logoutAll']);
-Route::post('/khach-hang/gio-hang/create', [GioHangController::class, 'store'])->middleware("KhachHangMiddle");
-Route::get('/khach-hang/gio-hang/data', [GioHangController::class, 'getGioHang'])->middleware("KhachHangMiddle");
-Route::post('/khach-hang/gio-hang/delete', [GioHangController::class, 'deleteGioHang'])->middleware("KhachHangMiddle");
+Route::post('/khach-hang/gio-hang/create', [ChiTietDonHangController::class, 'store'])->middleware("KhachHangMiddle");
+Route::get('/khach-hang/gio-hang/data', [ChiTietDonHangController::class, 'getGioHang'])->middleware("KhachHangMiddle");
+Route::post('/khach-hang/gio-hang/delete', [ChiTietDonHangController::class, 'deleteGioHang'])->middleware("KhachHangMiddle");
 
-Route::get('/danh-muc/data', [DanhMucController::class, 'getData']);
+Route::post('/khach-hang/don-hang/create', [DonHangController::class, 'store'])->middleware("KhachHangMiddle");
+Route::get('/khach-hang/lich-su-don-hang', [DonHangController::class, 'getDataLS'])->middleware("KhachHangMiddle");
+
+Route::get('/danh-muc/data-open', [DanhMucController::class, 'getDataOpen']);
 
 Route::get('/san-pham/data-noi-bat', [SanPhamController::class, 'getDataNoiBat']);
 Route::get('/san-pham/data-flash-sale', [SanPhamController::class, 'getDataFlashSale']);
@@ -39,3 +46,41 @@ Route::get('/chi-tiet-san-pham/{id}', [SanPhamController::class, 'layThongTinSan
 Route::get('/san-pham-de-xuat/{id_san_pham}', [SanPhamController::class, 'laySanPhamDeXuat']);
 
 Route::post('/san-pham/tim-kiem', [SanPhamController::class, 'searchProducts']);
+
+Route::post('/admin/dang-nhap', [AdminController::class, 'dangNhap']);
+Route::post('/admin/dang-xuat', [AdminController::class, 'logout']);
+Route::get('/admin/profile/data', [AdminController::class, 'getDataProfile'])->middleware("AdminMiddle");
+
+Route::get('/kiem-tra-admin', [AdminController::class, 'kiemTraAdmin']);
+Route::get('/san-pham', [SanPhamController::class, 'getData'])->middleware("AdminMiddle");
+Route::post('/admin/san-pham/create', [SanPhamController::class, 'store'])->middleware("AdminMiddle");
+Route::post('/admin/san-pham/delete', [SanPhamController::class, 'destroy'])->middleware("AdminMiddle");
+Route::post('/admin/san-pham/update', [SanPhamController::class, 'update'])->middleware("AdminMiddle");
+Route::post('/admin/san-pham/chuyen-trang-thai-ban', [SanPhamController::class, "chuyenTrangThaiBan"])->middleware("AdminMiddle");
+Route::post('/admin/san-pham/chuyen-noi-bat', [SanPhamController::class, "chuyenNoiBat"])->middleware("AdminMiddle");
+Route::post('/admin/san-pham/chuyen-flash-sale', [SanPhamController::class, "chuyenFlashSale"])->middleware("AdminMiddle");
+Route::post('/admin/san-pham/tim-kiem', [SanPhamController::class, 'search'])->middleware("AdminMiddle");
+
+Route::get('/danh-muc', [DanhMucController::class, 'getData'])->middleware("AdminMiddle");
+Route::post('/admin/danh-muc/create', [DanhMucController::class, 'store'])->middleware("AdminMiddle");
+Route::post('/admin/danh-muc/delete', [DanhMucController::class, 'destroy'])->middleware("AdminMiddle");
+Route::post('/admin/danh-muc/checkSlug', [DanhMucController::class, 'checkSlug'])->middleware("AdminMiddle");
+Route::post('/admin/danh-muc/update', [DanhMucController::class, 'update'])->middleware("AdminMiddle");
+Route::post('/admin/danh-muc/doi-trang-thai', [DanhMucController::class, 'changeStatus'])->middleware("AdminMiddle");
+
+Route::get('/admin/khach-hang/data', [KhachHangController::class, 'dataKhachHang'])->middleware("AdminMiddle");
+Route::post('/admin/khach-hang/kich-hoat-tai-khoan', [KhachHangController::class, 'kichHoatTaiKhoan'])->middleware("AdminMiddle");
+Route::post('/admin/khach-hang/doi-trang-thai', [KhachHangController::class, 'doiTrangThaiKhachHang'])->middleware("AdminMiddle");
+Route::post('/admin/khach-hang/update', [KhachHangController::class, 'updateTaiKhoan'])->middleware("AdminMiddle");
+Route::post('/admin/khach-hang/delete', [KhachHangController::class, 'deleteTaiKhoan'])->middleware("AdminMiddle");
+
+Route::post('/ma-giam-gia/kiem-tra',[MaGiamGiaController::class, 'kiemTraMaGiamGia']);
+Route::get('/ma-giam-gia/data', [MaGiamGiaController::class, 'getDataOpen']);
+
+Route::get('/admin/ma-giam-gia/data', [MaGiamGiaController::class, 'getData'])->middleware("AdminMiddle");
+Route::post('/admin/ma-giam-gia/create', [MaGiamGiaController::class, 'store'])->middleware("AdminMiddle");
+Route::post('/admin/ma-giam-gia/update', [MaGiamGiaController::class, 'update'])->middleware("AdminMiddle");
+Route::post('/admin/ma-giam-gia/doi-trang-thai', [MaGiamGiaController::class, 'doiTrangThai'])->middleware("AdminMiddle");
+Route::post('/admin/ma-giam-gia/delete', [MaGiamGiaController::class, 'destroy'])->middleware("AdminMiddle");
+
+Route::get('/admin/lich-su-don-hang', [DonHangController::class, 'getDataLSAD'])->middleware("AdminMiddle");

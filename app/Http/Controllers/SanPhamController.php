@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SanPham;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SanPhamController extends Controller
 {
@@ -70,11 +71,140 @@ class SanPhamController extends Controller
         ]);
     }
 
-    public function searchProducts(Request $request){
-        $noi_dung_tim = '%'. $request->noi_dung_tim . '%';
+    public function searchProducts(Request $request)
+    {
+        $noi_dung_tim = '%' . $request->noi_dung_tim . '%';
         $data   =  SanPham::where('ten_san_pham', 'like', $noi_dung_tim)
-                            ->orWhere('mo_ta_ngan', 'like', $noi_dung_tim)
-                            ->get();
+            ->orWhere('mo_ta_ngan', 'like', $noi_dung_tim)
+            ->get();
+        return response()->json([
+            'data'  => $data
+        ]);
+    }
+
+    public function getData()
+    {
+        $login = Auth::guard('sanctum')->user();
+
+        if ($login) {
+            $data = SanPham::get();
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Chưa đăng nhập hoặc token không hợp lệ'
+        ], 401);
+    }
+
+    public function store(Request $request)
+    {
+        $login = Auth::guard('sanctum')->user();
+        if($login){
+            SanPham::create([
+                'ten_san_pham'      =>$request->ten_san_pham,
+                'so_luong'          =>$request->so_luong,
+                'hinh_anh'          =>$request->hinh_anh,
+                'tinh_trang'        =>$request->tinh_trang,
+                'mo_ta_ngan'        =>$request->mo_ta_ngan,
+                'gia_ban'           =>$request->gia_ban,
+                'id_danh_muc'       =>$request->id_danh_muc,
+            ]);
+            return response()->json([
+                'status' => true,
+                'message' => "Đã thêm mới sản phẩm ". $request->ten_san_pham . " thành công.",
+            ]);
+        }
+    }
+
+    public function update(Request $request)
+    {
+        $login = Auth::guard('sanctum')->user();
+        if ($login) {
+            SanPham::find($request->id)->update([
+                'ten_san_pham'      => $request->ten_san_pham,
+                'so_luong'          => $request->so_luong,
+                'hinh_anh'          => $request->hinh_anh,
+                'tinh_trang'        => $request->tinh_trang,
+                'mo_ta_ngan'        => $request->mo_ta_ngan,
+                'gia_ban'           => $request->gia_ban,
+            ]);
+            return response()->json([
+                'status' => true,
+                'message' => "Đã sửa đổi thông tin " . $request->ten_san_pham . " thành công.",
+            ]);
+        }
+    }
+
+    public function destroy(Request $request)
+    {
+        $login = Auth::guard('sanctum')->user();
+        if ($login) {
+            SanPham::find($request->id)->delete();
+            return response()->json([
+                'status' => true,
+                'message' => "Đã xóa sản phẩm " . $request->ten_san_pham . " thành công.",
+            ]);
+        }
+    }
+
+    public function chuyenTrangThaiBan(Request $request)
+    {
+        $login = Auth::guard('sanctum')->user();
+        if ($login) {
+            $tinh_trang = $request->tinh_trang == 1 ? 0 : 1;
+            SanPham::find($request->id)->update([
+                'tinh_trang'    =>  $tinh_trang
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => "Đã đổi tình trạng sản phẩm " . $request->ten_san_pham . " thành công.",
+            ]);
+        }
+    }
+
+    public function chuyenNoiBat(Request $request)
+    {
+        $login = Auth::guard('sanctum')->user();
+        if ($login) {
+            $is_noi_bat = $request->is_noi_bat == 1 ? 0 : 1;
+            SanPham::find($request->id)->update([
+                'is_noi_bat'    =>  $is_noi_bat
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => "Đã đổi tình trạng sản phẩm " . $request->ten_san_pham . " thành công.",
+            ]);
+        }
+    }
+
+    public function chuyenFlashSale(Request $request)
+    {
+        $login = Auth::guard('sanctum')->user();
+        if ($login) {
+            $is_flash_sale = $request->is_flash_sale == 1 ? 0 : 1;
+            SanPham::find($request->id)->update([
+                'is_flash_sale'    =>  $is_flash_sale
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => "Đã đổi tình trạng sản phẩm " . $request->ten_san_pham . " thành công.",
+            ]);
+        }
+    }
+
+    public function search(Request $request)
+    {
+        $noi_dung_tim = '%' . $request->noi_dung_tim . '%';
+        $data   =  SanPham::where('ten_san_pham', 'like', $noi_dung_tim)
+            ->orWhere('mo_ta_ngan', 'like', $noi_dung_tim)
+            ->get();
         return response()->json([
             'data'  => $data
         ]);
