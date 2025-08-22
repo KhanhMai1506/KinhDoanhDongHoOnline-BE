@@ -20,6 +20,7 @@ return new class extends Migration
             $table->double('don_gia');
             $table->double('so_luong');
             $table->double('thanh_tien');
+            $table->string('ghi_chu')->nullable();
             $table->integer('tinh_trang');
             $table->timestamps();
         });
