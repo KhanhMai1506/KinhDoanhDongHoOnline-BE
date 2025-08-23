@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/khach-hang/doi-mat-khau', [KhachHangController::class, 'doiMatKhau']);
 Route::post('/khach-hang/dang-nhap', [KhachHangController::class, 'dangNhap']);
+
 Route::post('/khach-hang/dang-ky', [KhachHangController::class, 'dangKy']);
 Route::post('/khach-hang/kich-hoat', [KhachHangController::class, 'kichHoat']);
 Route::get('/khach-hang/profile/data', [KhachHangController::class, 'getDataProfile'])->middleware("KhachHangMiddle");
@@ -84,3 +85,7 @@ Route::post('/admin/ma-giam-gia/doi-trang-thai', [MaGiamGiaController::class, 'd
 Route::post('/admin/ma-giam-gia/delete', [MaGiamGiaController::class, 'destroy'])->middleware("AdminMiddle");
 
 Route::get('/admin/lich-su-don-hang', [DonHangController::class, 'getDataLSAD'])->middleware("AdminMiddle");
+
+
+Route::get('/auth/google/redirect', [KhachHangController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [KhachHangController::class, 'handleGoogleCallback']);
