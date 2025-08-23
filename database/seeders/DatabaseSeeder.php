@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             DiaChiSeeding::class,
             DanhMucSeeding::class,
             SanPhamSeeding::class,
+            AdminSeeding::class,
+            MaGiamGiaSeeding::class,
         ]);
     }
 }

@@ -13,17 +13,13 @@ return [
             'driver'    => 'session',
             'provider'  => 'users',
         ],
-        'daily' => [
-            'driver'    => 'session',
-            'provider'  => 'dailyprovider',
-        ],
         'khachhang' => [
             'driver'    => 'session',
             'provider'  => 'khachhangprovider',
         ],
-        'nhanvien' => [
+        'admin' => [
             'driver'    => 'session',
-            'provider'  => 'nhanvienprovider',
+            'provider'  => 'adminprovider',
         ],
     ],
 
@@ -32,17 +28,13 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
-        'dailyprovider' => [
-            'driver'    => 'eloquent',
-            'model'     => \App\Models\DaiLy::class,
-        ],
         'khachhangprovider' => [
             'driver'    => 'eloquent',
             'model'     => \App\Models\KhachHang::class,
         ],
-        'nhanvienprovider' => [
+        'adminprovider' => [
             'driver'    => 'eloquent',
-            'model'     => \App\Models\NhanVien::class,
+            'model'     => \App\Models\Admin::class,
         ],
     ],
 
