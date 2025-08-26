@@ -7,6 +7,7 @@ use App\Http\Controllers\KhachHangController;
 use App\Http\Controllers\SanPhamController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChiTietDonHangController;
+use App\Http\Controllers\DanhGiaController;
 use App\Http\Controllers\MaGiamGiaController;
 use App\Http\Controllers\DonHangController;
 use Illuminate\Http\Request;
@@ -49,6 +50,12 @@ Route::get('/san-pham-de-xuat/{id_san_pham}', [SanPhamController::class, 'laySan
 
 Route::post('/san-pham/tim-kiem', [SanPhamController::class, 'searchProducts']);
 
+Route::get('/danh-gia/{id}', [DanhGiaController::class, 'layDanhGia']);
+Route::post('/danh-gia/create', [DanhGiaController::class, 'taoDanhGia'])->middleware("KhachHangMiddle");
+Route::get('/danh-gia/thong-ke/{id}', [DanhGiaController::class, 'thongKe']);
+
+Route::get('/gio-hang/dem', [ChiTietDonHangController::class, 'demSoLuongGioHang']);
+
 Route::post('/admin/dang-nhap', [AdminController::class, 'dangNhap']);
 Route::post('/admin/dang-xuat', [AdminController::class, 'logout']);
 Route::get('/admin/profile/data', [AdminController::class, 'getDataProfile'])->middleware("AdminMiddle");
@@ -75,6 +82,7 @@ Route::post('/admin/khach-hang/kich-hoat-tai-khoan', [KhachHangController::class
 Route::post('/admin/khach-hang/doi-trang-thai', [KhachHangController::class, 'doiTrangThaiKhachHang'])->middleware("AdminMiddle");
 Route::post('/admin/khach-hang/update', [KhachHangController::class, 'updateTaiKhoan'])->middleware("AdminMiddle");
 Route::post('/admin/khach-hang/delete', [KhachHangController::class, 'deleteTaiKhoan'])->middleware("AdminMiddle");
+Route::post('/admin/khach-hang/tim-kiem', [KhachHangController::class, 'search'])->middleware("AdminMiddle");
 
 Route::post('/ma-giam-gia/kiem-tra',[MaGiamGiaController::class, 'kiemTraMaGiamGia']);
 Route::get('/ma-giam-gia/data', [MaGiamGiaController::class, 'getDataOpen']);
@@ -88,5 +96,11 @@ Route::post('/admin/ma-giam-gia/delete', [MaGiamGiaController::class, 'destroy']
 Route::get('/admin/lich-su-don-hang', [DonHangController::class, 'getDataLSAD'])->middleware("AdminMiddle");
 
 
+Route::get('/admin/danh-gia/data', [DanhGiaController::class, 'layDanhGiaAdmin'])->middleware('AdminMiddle');
+Route::post('/admin/danh-gia/{id}/phan-hoi', [DanhGiaController::class, 'phanHoi'])->middleware('AdminMiddle');
+Route::post('/admin/danh-gia/delete', [DanhGiaController::class, 'destroy'])->middleware("AdminMiddle");
+Route::post('/admin/danh-gia/tim-kiem', [DanhGiaController::class, 'timKiemDanhGia'])->middleware("AdminMiddle");
+
 Route::get('/auth/google/redirect', [KhachHangController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [KhachHangController::class, 'handleGoogleCallback']);
+

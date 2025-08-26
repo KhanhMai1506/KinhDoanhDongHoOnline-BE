@@ -6,6 +6,7 @@ use App\Models\ChiTietDonHang;
 use App\Models\SanPham;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ChiTietDonHangController extends Controller
 {
@@ -91,6 +92,20 @@ class ChiTietDonHangController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Đặt hàng thành công, giỏ đã được làm trống'
+        ]);
+    }
+
+    public function demSoLuongGioHang()
+    {
+        $khachHang = Auth::guard('sanctum')->user();
+        $soLuong = DB::table('chi_tiet_don_hangs')
+            ->where('id_khach_hang', $khachHang->id)
+            ->where('is_gio_hang', 1)
+            ->sum('so_luong');
+
+        return response()->json([
+            'status' => true,
+            'so_luong' => $soLuong
         ]);
     }
 }

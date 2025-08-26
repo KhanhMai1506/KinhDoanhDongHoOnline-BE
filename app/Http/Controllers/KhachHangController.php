@@ -267,7 +267,7 @@ class KhachHangController extends Controller
 
                 return response()->json([
                     'status' => true,
-                    'message' => "Đã đổi trạng thái tài khoản thành công!"
+                    'message' => "Đã xóa tài khoản thành công!"
                 ]);
             } else {
                 return response()->json([
@@ -280,6 +280,16 @@ class KhachHangController extends Controller
             'status' => false,
             'message' => 'Chưa đăng nhập hoặc token không hợp lệ'
         ], 401);
+    }
+
+    public function search(Request $request)
+    {
+        $noi_dung_tim = '%' . $request->noi_dung_tim . '%';
+        $data   =  KhachHang::where('ho_va_ten', 'like', $noi_dung_tim)
+                            ->get();
+        return response()->json([
+            'data'  => $data
+        ]);
     }
 
     public function doiMatKhau(KhachHangDoiMatKhauRequest $request) {

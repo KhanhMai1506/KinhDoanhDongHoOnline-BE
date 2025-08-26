@@ -25,6 +25,14 @@ class KhachHangSeeding extends Seeder
                 'password' => Hash::make('123456'),
                 'is_active'     =>  1,
             ],
+            [
+                'hinh_anh'     =>   '',
+                'ho_va_ten'     =>  'Doãn Khánh Mai',
+                'email'         =>  'km@gmail.com',
+                'so_dien_thoai' =>  '0920211217',
+                'password'      =>  bcrypt('123456'),
+                'is_active'     =>  1,
+            ],
         ]);
     }
 }
