@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/khach-hang/doi-mat-khau', [KhachHangController::class, 'doiMatKhau']);
+Route::post('/admin/doi-mat-khau', [AdminController::class, 'doiMatKhau']);
 Route::post('/khach-hang/dang-nhap', [KhachHangController::class, 'dangNhap']);
 
 Route::post('/khach-hang/dang-ky', [KhachHangController::class, 'dangKy']);
