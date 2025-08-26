@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AdminDangNhapRequest;
+use App\Http\Requests\AdminDoiMatKhau;
 use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -75,5 +77,24 @@ class AdminController extends Controller
                 'message'   =>  'Bạn cần đăng nhập hệ thống trước'
             ]);
         }
+    }
+
+    public function doiMatKhau(AdminDoiMatKhau $request) {
+        $admin = Auth::guard('sanctum')->user();
+
+        if (!Hash::check($request->current_password, $admin->password)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Mật khẩu cũ không chính xác'
+            ], 400);
+        }
+        
+        $admin->password = Hash::make($request->new_password);
+        $admin->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Đổi mật khẩu thành công'
+        ]);
     }
 }

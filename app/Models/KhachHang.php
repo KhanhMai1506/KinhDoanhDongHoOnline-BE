@@ -22,5 +22,6 @@ class KhachHang extends Authenticatable
         'hash_active',
         'is_active',
         'is_block',
+        'google_id'
     ];
 }

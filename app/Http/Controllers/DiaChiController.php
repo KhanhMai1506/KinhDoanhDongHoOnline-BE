@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DiaChi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\QuanLyTaiKhoanCaNhan;
 
 class DiaChiController extends Controller
 {
@@ -16,7 +17,7 @@ class DiaChiController extends Controller
             'data'    =>  $dia_chi
         ]);
     }
-    public function store(Request $request)
+    public function store(QuanLyTaiKhoanCaNhan $request)
     {
         $tai_khoan_dang_dang_nhap = Auth::guard('sanctum')->user();
         DiaChi::create([
@@ -39,10 +40,10 @@ class DiaChiController extends Controller
         return response()->json([
             'status'    => $check,
             'message'   => 
-                        $check == true ? "Đã xóa địa chỉ " . $request->dia_chi . " thành công." : "Xóa địa chỉ không thành công",
+                        $check == true ? "Đã xóa địa chỉ thành công." : "Xóa địa chỉ không thành công",
         ]);
     }
-    public function update(Request $request)
+    public function update(QuanLyTaiKhoanCaNhan $request)
     {
         $tai_khoan_dang_dang_nhap   = Auth::guard('sanctum')->user();
         $check = DiaChi::where('id', $request->id)->where('id_khach_hang', $tai_khoan_dang_dang_nhap->id)->update([
