@@ -13,16 +13,26 @@ return new class extends Migration
     {
         Schema::create('chi_tiet_don_hangs', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_san_pham');
-            $table->integer('id_khach_hang');
-            $table->integer('id_don_hang')->nullable();
-            $table->integer('is_gio_hang')->default(1);
-            $table->double('don_gia');
-            $table->double('so_luong');
-            $table->double('thanh_tien');
+
+            // Khóa ngoại
+            $table->unsignedBigInteger('id_san_pham');
+            $table->unsignedBigInteger('id_khach_hang');
+            $table->unsignedBigInteger('id_don_hang')->nullable();
+
+            // Thông tin
+            $table->boolean('is_gio_hang')->default(1); // 1 = trong giỏ, 0 = đã đặt
+            $table->decimal('don_gia', 15, 2)->default(0);
+            $table->unsignedInteger('so_luong')->default(1);
+            $table->decimal('thanh_tien', 15, 2)->default(0);
             $table->string('ghi_chu')->nullable();
-            $table->integer('tinh_trang');
+            $table->integer('tinh_trang')->default(0)->comment('0: Chờ xác nhận, 1: Đang giao, 2: Hoàn tất, 3: Hủy');
+
             $table->timestamps();
+
+            // Foreign keys
+            $table->foreign('id_san_pham')->references('id')->on('san_phams')->onDelete('cascade');
+            $table->foreign('id_khach_hang')->references('id')->on('khach_hangs')->onDelete('cascade');
+            $table->foreign('id_don_hang')->references('id')->on('don_hangs')->onDelete('set null');
         });
     }
 

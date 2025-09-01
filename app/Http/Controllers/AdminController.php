@@ -76,4 +76,40 @@ class AdminController extends Controller
             ]);
         }
     }
+
+    public function updateAvatar(Request $request)
+    {
+        $login = Auth::guard('sanctum')->user();
+        if (!$login) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chưa đăng nhập hoặc token không hợp lệ'
+            ], 401);
+        }
+
+        $admin = Admin::find($login->id);
+        if (!$admin) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy tài khoản'
+            ], 404);
+        }
+
+        if ($request->hasFile('hinh_anh')) {
+            $file = $request->file('hinh_anh');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('avatars', $fileName, 'public');
+
+            // Lưu full URL để Vue load được
+            $admin->hinh_anh = asset('storage/' . $path);
+            $admin->save();
+        }
+
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Cập nhật avatar thành công!',
+            'data' => $admin
+        ]);
+    }
 }

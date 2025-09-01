@@ -15,7 +15,7 @@ class DiaChiSeeding extends Seeder
     {
         DB::table('dia_chis')->delete();
 
-        DB::table('dia_chis')->truncate();
+        // DB::table('dia_chis')->truncate();
 
         DB::table('dia_chis')->insert([
             [

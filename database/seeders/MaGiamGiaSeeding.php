@@ -19,8 +19,8 @@ class MaGiamGiaSeeding extends Seeder
             [
                 'code' => 'DISCOUNT01',
                 'tinh_trang' => 1,
-                'ngay_bat_dau' => '2025-12-01',
-                'ngay_ket_thuc' => '2025-12-30',
+                'ngay_bat_dau' => '2025-08-01',
+                'ngay_ket_thuc' => '2025-10-30',
                 'loai_giam_gia' => 1, // giảm tiền cố định
                 'so_giam_gia' => 10000, // giảm 10k
                 'so_tien_toi_da' => 0,
