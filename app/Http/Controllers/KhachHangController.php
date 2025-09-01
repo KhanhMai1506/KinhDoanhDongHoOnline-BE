@@ -13,6 +13,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use Exception;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
+
 
 class KhachHangController extends Controller
 {
@@ -271,6 +278,7 @@ class KhachHangController extends Controller
             'message' => 'Chưa đăng nhập hoặc token không hợp lệ'
         ], 401);
     }
+
     public function search(Request $request)
     {
         $noi_dung_tim = '%' . $request->noi_dung_tim . '%';
