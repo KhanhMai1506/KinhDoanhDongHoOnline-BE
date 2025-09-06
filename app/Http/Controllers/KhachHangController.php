@@ -6,9 +6,6 @@ use App\Http\Requests\KhachHangDangKyRequest;
 use App\Http\Requests\KhachHangDangNhapRequest;
 use App\Http\Requests\KhachHangDoiMatKhauRequest;
 use App\Mail\MasterMail;
-use App\Models\chi_tiet_phan_quyen;
-use App\Models\ChiTietPhanQuyen;
-use App\Models\khach_hang;
 use App\Models\KhachHang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -286,76 +283,45 @@ class KhachHangController extends Controller
     {
         $noi_dung_tim = '%' . $request->noi_dung_tim . '%';
         $data   =  KhachHang::where('ho_va_ten', 'like', $noi_dung_tim)
-                            ->get();
+            ->get();
         return response()->json([
             'data'  => $data
         ]);
     }
 
-    public function doiMatKhau(KhachHangDoiMatKhauRequest $request) {
-        $khach_hang = Auth::guard('sanctum')->user();
-
-        if (!Hash::check($request->current_password, $khach_hang->password)) {
+    public function updateAvatar(Request $request)
+    {
+        $login = Auth::guard('sanctum')->user();
+        if (!$login) {
             return response()->json([
                 'status' => false,
-                'message' => 'Mật khẩu cũ không chính xác'
-            ], 400);
+                'message' => 'Chưa đăng nhập hoặc token không hợp lệ'
+            ], 401);
         }
-        
-        $khach_hang->password = Hash::make($request->new_password);
-        $khach_hang->save();
+
+        $khach_hang = KhachHang::find($login->id);
+        if (!$khach_hang) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy tài khoản'
+            ], 404);
+        }
+
+        if ($request->hasFile('hinh_anh')) {
+            $file = $request->file('hinh_anh');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('avatars', $fileName, 'public');
+
+            // Lưu full URL để Vue load được
+            $khach_hang->hinh_anh = asset('storage/' . $path);
+            $khach_hang->save();
+        }
+
 
         return response()->json([
             'status' => true,
-            'message' => 'Đổi mật khẩu thành công'
+            'message' => 'Cập nhật avatar thành công!',
+            'data' => $khach_hang
         ]);
     }
-
-public function redirectToGoogle()
-    {
-        return Socialite::driver('google')->stateless()->redirect();
-    }
-
-    // Callback sau khi chọn Google account
-    public function handleGoogleCallback()
-    {
-        try {
-            $googleUser = Socialite::driver('google')->stateless()->user();
-
-            $user = KhachHang::where('email', $googleUser->getEmail())
-                ->orWhere('google_id', $googleUser->getId())
-                ->first();
-
-            if (!$user) {
-                $user = KhachHang::create([
-                    'ho_va_ten'    => $googleUser->getName(),
-                    'email'        => $googleUser->getEmail(),
-                    'google_id'    => $googleUser->getId(),
-                    'password'     => bcrypt(Str::random(16)),
-                    'is_active'    => 1,
-                    'is_block'     => 0,
-                    'hash_active'  => null,
-                    'hinh_anh'     => $googleUser->getAvatar(),
-                    'so_dien_thoai'=> '',
-                ]);
-            } else if (!$user->google_id) {
-                $user->google_id = $googleUser->getId();
-                $user->save();
-            }
-
-            $token = $user->createToken('authToken')->plainTextToken;
-
-            // Trả về view popup để gửi token về FE
-            return view('auth.google-popup', [
-                'token' => $token,
-                'user'  => $user
-            ]);
-
-        } catch (\Exception $e) {
-            return view('auth.google-popup', [
-                'error' => $e->getMessage()
-            ]);
-        }
-    }
-    
 }

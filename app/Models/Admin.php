@@ -15,6 +15,7 @@ class Admin extends Authenticatable
     protected $fillable = [
         'email',
         'password',
+        'hinh_anh',
         'ho_va_ten',
         'so_dien_thoai',
         'dia_chi',

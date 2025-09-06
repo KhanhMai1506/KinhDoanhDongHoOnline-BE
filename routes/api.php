@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\DanhMucController;
 use App\Http\Controllers\DiaChiController;
-use App\Http\Controllers\GioHangController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\KhachHangController;
 use App\Http\Controllers\SanPhamController;
 use App\Http\Controllers\AdminController;
@@ -21,7 +21,7 @@ Route::post('/khach-hang/dang-ky', [KhachHangController::class, 'dangKy']);
 Route::post('/khach-hang/kich-hoat', [KhachHangController::class, 'kichHoat']);
 Route::get('/khach-hang/profile/data', [KhachHangController::class, 'getDataProfile'])->middleware("KhachHangMiddle");
 Route::post('/khach-hang/profile/update', [KhachHangController::class, 'updateProfile'])->middleware("KhachHangMiddle");
-Route::post('/khach-hang/profile/update-avatar', [KhachHangController::class, 'changeAvatar'])->middleware("KhachHangMiddle");
+Route::post('/khach-hang/profile/update-avatar', [KhachHangController::class, 'updateAvatar'])->middleware("KhachHangMiddle");
 Route::get('/khach-hang/dia-chi/data', [DiaChiController::class, 'getData'])->middleware("KhachHangMiddle");
 Route::post('/khach-hang/dia-chi/create', [DiaChiController::class, 'store'])->middleware("KhachHangMiddle");
 Route::post('/khach-hang/dia-chi/update', [DiaChiController::class, 'update'])->middleware("KhachHangMiddle");
@@ -33,9 +33,18 @@ Route::post('/khach-hang/dang-xuat-all', [KhachHangController::class, 'logoutAll
 Route::post('/khach-hang/gio-hang/create', [ChiTietDonHangController::class, 'store'])->middleware("KhachHangMiddle");
 Route::get('/khach-hang/gio-hang/data', [ChiTietDonHangController::class, 'getGioHang'])->middleware("KhachHangMiddle");
 Route::post('/khach-hang/gio-hang/delete', [ChiTietDonHangController::class, 'deleteGioHang'])->middleware("KhachHangMiddle");
+Route::post('/khach-hang/gio-hang/update', [ChiTietDonHangController::class, 'updateGioHang'])->middleware("KhachHangMiddle");
 
 Route::post('/khach-hang/don-hang/create', [DonHangController::class, 'store'])->middleware("KhachHangMiddle");
 Route::get('/khach-hang/lich-su-don-hang', [DonHangController::class, 'getDataLS'])->middleware("KhachHangMiddle");
+
+Route::post('/khach-hang/thanh-toan', [PaymentController::class, 'thanhToan'])->middleware("KhachHangMiddle");
+Route::post('/momo_payment', [PaymentController::class, 'momo_payment'])->middleware("KhachHangMiddle");
+Route::middleware('KhachHangMiddleWare')->group(function () {
+    Route::post('/payment/cod',   [PaymentController::class, 'codPayment']);
+    Route::post('/payment/momo',  [PaymentController::class, 'momoPayment']);
+    Route::post('/payment/momo/callback', [PaymentController::class, 'momoCallback']);
+});
 
 Route::get('/danh-muc/data-open', [DanhMucController::class, 'getDataOpen']);
 
@@ -59,6 +68,7 @@ Route::get('/gio-hang/dem', [ChiTietDonHangController::class, 'demSoLuongGioHang
 Route::post('/admin/dang-nhap', [AdminController::class, 'dangNhap']);
 Route::post('/admin/dang-xuat', [AdminController::class, 'logout']);
 Route::get('/admin/profile/data', [AdminController::class, 'getDataProfile'])->middleware("AdminMiddle");
+Route::post('/admin/profile/update-avatar', [AdminController::class, 'updateAvatar'])->middleware("AdminMiddle");
 
 Route::get('/kiem-tra-admin', [AdminController::class, 'kiemTraAdmin']);
 Route::get('/san-pham', [SanPhamController::class, 'getData'])->middleware("AdminMiddle");

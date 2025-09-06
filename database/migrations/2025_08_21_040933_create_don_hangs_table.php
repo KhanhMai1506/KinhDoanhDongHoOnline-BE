@@ -13,16 +13,27 @@ return new class extends Migration
     {
         Schema::create('don_hangs', function (Blueprint $table) {
             $table->id();
-            $table->string('ma_don_hang');
-            $table->integer('id_khach_hang');
-            $table->integer('id_dia_chi');
-            $table->integer('tong_tien');
+            $table->string('ma_don_hang')->unique();
+
+            // Khách hàng & địa chỉ
+            $table->unsignedBigInteger('id_khach_hang');
+            $table->unsignedBigInteger('id_dia_chi')->nullable();
+
+            // Tiền tệ
+            $table->decimal('tong_tien', 15, 2)->default(0);
             $table->string('ma_code_giam')->nullable();
-            $table->integer('so_tien_giam')->default(0);
-            $table->integer('so_tien_thanh_toan');
-            $table->integer('is_thanh_toan')->default(0);
-            $table->integer('phuong_thuc')->comment('0: thanh toán online, 1: thanh toán cod');
+            $table->decimal('so_tien_giam', 15, 2)->default(0);
+            $table->decimal('so_tien_thanh_toan', 15, 2)->default(0);
+
+            // Thanh toán
+            $table->boolean('is_thanh_toan')->default(0); // 0 = chưa thanh toán
+            $table->string('phuong_thuc')->default('COD'); // COD, MOMO, v.v
+
             $table->timestamps();
+
+            // Khóa ngoại
+            $table->foreign('id_khach_hang')->references('id')->on('khach_hangs')->onDelete('cascade');
+            $table->foreign('id_dia_chi')->references('id')->on('dia_chis')->onDelete('set null');
         });
     }
 

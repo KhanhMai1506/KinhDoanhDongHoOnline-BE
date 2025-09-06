@@ -21,16 +21,16 @@ class ChiTietDonHangController extends Controller
             ->first();
 
         if ($chiTiet) {
-            $chiTiet->so_luong   += $request->so_luong_mua;
+            $chiTiet->so_luong   += $request->so_luong;
             $chiTiet->thanh_tien  = $chiTiet->so_luong * $chiTiet->don_gia;
             $chiTiet->save();
         } else {
             $chiTiet = ChiTietDonHang::create([
                 'id_san_pham'    => $sanPham->id,
                 'id_khach_hang'  => $khachHang->id,
-                'so_luong'       => $request->so_luong_mua,
+                'so_luong'       => $request->so_luong,
                 'don_gia'        => $sanPham->gia_ban,
-                'thanh_tien'     => $sanPham->gia_ban * $request->so_luong_mua,
+                'thanh_tien'     => $sanPham->gia_ban * $request->so_luong,
                 'is_gio_hang'    => 1,
                 'tinh_trang'     => 0,
             ]);
@@ -54,7 +54,8 @@ class ChiTietDonHangController extends Controller
                 'chi_tiet_don_hangs.*',
                 'san_phams.hinh_anh',
                 'san_phams.ten_san_pham',
-                'san_phams.gia_ban as don_gia'
+                'san_phams.gia_ban',
+                'san_phams.so_luong as so_luong_ton'
             )
             ->get();
 
@@ -107,5 +108,25 @@ class ChiTietDonHangController extends Controller
             'status' => true,
             'so_luong' => $soLuong
         ]);
+    }
+
+    public function updateGioHang(Request $request)
+    {
+        $khachHang = Auth::guard('sanctum')->user();
+
+        $gioHang = ChiTietDonHang::where('id', $request->id)
+            ->where('id_khach_hang', $khachHang->id)
+            ->where('is_gio_hang', 1)
+            ->first();
+
+        if ($gioHang) {
+            $gioHang->so_luong = $request->so_luong;
+            $gioHang->thanh_tien = $gioHang->so_luong * $gioHang->don_gia;
+            $gioHang->save();
+
+            return response()->json(['status' => true, 'message' => 'Cập nhật thành công!']);
+        }
+
+        return response()->json(['status' => false, 'message' => 'Không tìm thấy sản phẩm trong giỏ hàng!']);
     }
 }
