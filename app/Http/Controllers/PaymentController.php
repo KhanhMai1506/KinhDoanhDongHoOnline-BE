@@ -50,25 +50,23 @@ class PaymentController extends Controller
                 $this->capNhatSoLuong($ct->id_san_pham, $ct->so_luong);
             } else {
                 // Nếu từ giỏ hàng
-                $chiTietList = ChiTietDonHang::where('id_khach_hang', $khachHang->id)
-                    ->where('is_gio_hang', 1)
-                    ->get();
+                $idsSanPham = collect($request->san_phams)->pluck('id')->toArray();
 
-                foreach ($chiTietList as $ct) {
-                    $ct->update([
+                ChiTietDonHang::where('id_khach_hang', $khachHang->id)
+                    ->where('is_gio_hang', 1)
+                    ->whereIn('id', $idsSanPham)
+                    ->update([
                         'id_don_hang' => $donHang->id,
                         'is_gio_hang' => 0,
                         'tinh_trang'  => 0
                     ]);
-                    $this->capNhatSoLuong($ct->id_san_pham, $ct->so_luong);
-                }
             }
 
             DB::commit();
 
             // Nếu COD → xác nhận luôn
             if ($phuongThuc == 1) {
-                $donHang->is_thanh_toan = 1;
+                $donHang->is_thanh_toan = 0;
                 $donHang->save();
                 return response()->json([
                     'status'  => true,
