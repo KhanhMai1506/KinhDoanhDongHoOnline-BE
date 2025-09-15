@@ -324,4 +324,70 @@ class KhachHangController extends Controller
             'data' => $khach_hang
         ]);
     }
+
+     public function doiMatKhau(KhachHangDoiMatKhauRequest $request) {
+        $khach_hang = Auth::guard('sanctum')->user();
+
+        if (!Hash::check($request->current_password, $khach_hang->password)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Mật khẩu cũ không chính xác'
+            ], 400);
+        }
+        
+        $khach_hang->password = Hash::make($request->new_password);
+        $khach_hang->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Đổi mật khẩu thành công'
+        ]);
+    }
+
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->stateless()->redirect();
+    }
+
+ // Callback sau khi chọn Google account
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->user();
+
+            $user = KhachHang::where('email', $googleUser->getEmail())
+                ->orWhere('google_id', $googleUser->getId())
+                ->first();
+
+            if (!$user) {
+                $user = KhachHang::create([
+                    'ho_va_ten'    => $googleUser->getName(),
+                    'email'        => $googleUser->getEmail(),
+                    'google_id'    => $googleUser->getId(),
+                    'password'     => bcrypt(Str::random(16)),
+                    'is_active'    => 1,
+                    'is_block'     => 0,
+                    'hash_active'  => null,
+                    'hinh_anh'     => $googleUser->getAvatar(),
+                    'so_dien_thoai'=> '',
+                ]);
+            } else if (!$user->google_id) {
+                $user->google_id = $googleUser->getId();
+                $user->save();
+            }
+
+            $token = $user->createToken('authToken')->plainTextToken;
+
+            // Trả về view popup để gửi token về FE
+            return view('auth.google-popup', [
+                'token' => $token,
+                'user'  => $user
+            ]);
+
+        } catch (\Exception $e) {
+            return view('auth.google-popup', [
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
 }
