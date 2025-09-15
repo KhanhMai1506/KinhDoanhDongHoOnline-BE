@@ -103,19 +103,19 @@ class SanPhamController extends Controller
     public function store(Request $request)
     {
         $login = Auth::guard('sanctum')->user();
-        if($login){
+        if ($login) {
             SanPham::create([
-                'ten_san_pham'      =>$request->ten_san_pham,
-                'so_luong'          =>$request->so_luong,
-                'hinh_anh'          =>$request->hinh_anh,
-                'tinh_trang'        =>$request->tinh_trang,
-                'mo_ta_ngan'        =>$request->mo_ta_ngan,
-                'gia_ban'           =>$request->gia_ban,
-                'id_danh_muc'       =>$request->id_danh_muc,
+                'ten_san_pham'      => $request->ten_san_pham,
+                'so_luong'          => $request->so_luong,
+                'hinh_anh'          => $request->hinh_anh,
+                'tinh_trang'        => $request->tinh_trang,
+                'mo_ta_ngan'        => $request->mo_ta_ngan,
+                'gia_ban'           => $request->gia_ban,
+                'id_danh_muc'       => $request->id_danh_muc,
             ]);
             return response()->json([
                 'status' => true,
-                'message' => "Đã thêm mới sản phẩm ". $request->ten_san_pham . " thành công.",
+                'message' => "Đã thêm mới sản phẩm " . $request->ten_san_pham . " thành công.",
             ]);
         }
     }
@@ -188,9 +188,17 @@ class SanPhamController extends Controller
         $login = Auth::guard('sanctum')->user();
         if ($login) {
             $is_flash_sale = $request->is_flash_sale == 1 ? 0 : 1;
-            SanPham::find($request->id)->update([
-                'is_flash_sale'    =>  $is_flash_sale
-            ]);
+
+            $updateData = [
+                'is_flash_sale' => $is_flash_sale
+            ];
+
+            // Nếu tắt Flash Sale thì reset giá giảm
+            if ($is_flash_sale == 0) {
+                $updateData['gia_giam'] = null;
+            }
+
+            SanPham::find($request->id)->update($updateData);
 
             return response()->json([
                 'status' => true,
@@ -198,6 +206,7 @@ class SanPhamController extends Controller
             ]);
         }
     }
+
 
     public function search(Request $request)
     {
