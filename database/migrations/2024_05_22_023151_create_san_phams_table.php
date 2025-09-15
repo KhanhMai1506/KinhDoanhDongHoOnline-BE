@@ -20,6 +20,8 @@ return new class extends Migration
             $table->integer('tinh_trang');
             $table->longText('mo_ta_ngan');
             $table->integer('gia_ban');
+            $table->integer('phan_tram')->nullable();
+            $table->integer('gia_khuyen_mai')->nullable();
             $table->integer('is_noi_bat')->default(0);
             $table->integer('is_flash_sale')->default(0);
             $table->timestamps();
