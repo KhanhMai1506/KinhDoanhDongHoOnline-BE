@@ -14,7 +14,6 @@ class SanPhamSeeding extends Seeder
     public function run(): void
     {
         DB::table('san_phams')->delete();
-        // DB::table('san_phams')->truncate();
         DB::table('san_phams')->insert([
             $this->sanPham(
                 1,
