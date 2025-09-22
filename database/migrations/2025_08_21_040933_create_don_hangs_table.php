@@ -27,7 +27,7 @@ return new class extends Migration
 
             // Thanh toán
             $table->boolean('is_thanh_toan')->default(0); // 0 = chưa thanh toán
-            $table->string('phuong_thuc')->default('COD'); // COD, MOMO, v.v
+            $table->tinyInteger('phuong_thuc')->default(1);  // COD, MOMO, v.v
 
             $table->timestamps();
 

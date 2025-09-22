@@ -62,6 +62,7 @@ Route::post('/san-pham/tim-kiem', [SanPhamController::class, 'searchProducts']);
 Route::get('/danh-gia/{id}', [DanhGiaController::class, 'layDanhGia']);
 Route::post('/danh-gia/create', [DanhGiaController::class, 'taoDanhGia'])->middleware("KhachHangMiddle");
 Route::get('/danh-gia/thong-ke/{id}', [DanhGiaController::class, 'thongKe']);
+Route::get('/danh-gia/kiem-tra/{id_san_pham}', [DanhGiaController::class, 'kiemTraQuyen'])->middleware("KhachHangMiddle");
 
 Route::get('/gio-hang/dem', [ChiTietDonHangController::class, 'demSoLuongGioHang']);
 

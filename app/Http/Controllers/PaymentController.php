@@ -15,59 +15,92 @@ class PaymentController extends Controller
     // API chung cho Thanh toán (COD hoặc MoMo)
     public function thanhToan(Request $request)
     {
-        $khachHang = Auth::guard('sanctum')->user();
-        $tongTien  = $request->tong_tien;
+        $khachHang  = Auth::guard('sanctum')->user();
         $phuongThuc = $request->phuong_thuc; // 0: online (MoMo), 1: COD
 
         DB::beginTransaction();
         try {
-            // Tạo đơn hàng
+            $tongTien = 0; // sẽ tự tính
+
+            // Tạo đơn hàng trước (chưa có tổng tiền chính xác)
             $donHang = DonHang::create([
                 'ma_don_hang'        => 'DH' . time(),
                 'id_khach_hang'      => $khachHang->id,
                 'id_dia_chi'         => $request->id_dia_chi ?? 1,
-                'tong_tien'          => $request->tong_tien + $request->so_tien_giam,
+                'tong_tien'          => 0,
                 'ma_code_giam'       => $request->ma_code_giam,
-                'so_tien_giam'       => $request->so_tien_giam,
-                'so_tien_thanh_toan' => $tongTien,
+                'so_tien_giam'       => $request->so_tien_giam ?? 0,
+                'so_tien_thanh_toan' => 0,
                 'is_thanh_toan'      => 0,
                 'phuong_thuc'        => $phuongThuc,
             ]);
 
             // Nếu là "Mua Ngay"
             if ($request->is_mua_ngay) {
-                $ct = ChiTietDonHang::create([
-                    'id_san_pham'   => $request->id_san_pham,
+                $sanPham = SanPham::findOrFail($request->id_san_pham);
+
+                $giaKhuyenMai = $sanPham->gia_khuyen_mai ?? 0;
+                $donGia = ($sanPham->is_flash_sale == 1 && $giaKhuyenMai > 0)
+                    ? $giaKhuyenMai
+                    : $sanPham->gia_ban;
+
+                $thanhTien = $request->so_luong * $donGia;
+                $tongTien += $thanhTien;
+
+                ChiTietDonHang::create([
+                    'id_san_pham'   => $sanPham->id,
                     'id_khach_hang' => $khachHang->id,
                     'id_don_hang'   => $donHang->id,
                     'is_gio_hang'   => 0,
-                    'don_gia'       => $request->don_gia,
+                    'don_gia'       => $donGia,
                     'so_luong'      => $request->so_luong,
-                    'thanh_tien'    => $request->so_luong * $request->don_gia,
+                    'thanh_tien'    => $thanhTien,
                     'tinh_trang'    => 0
                 ]);
 
-                $this->capNhatSoLuong($ct->id_san_pham, $ct->so_luong);
+                $this->capNhatSoLuong($sanPham->id, $request->so_luong);
             } else {
                 // Nếu từ giỏ hàng
                 $idsSanPham = collect($request->san_phams)->pluck('id')->toArray();
 
-                ChiTietDonHang::where('id_khach_hang', $khachHang->id)
+                $chiTietGioHang = ChiTietDonHang::where('id_khach_hang', $khachHang->id)
                     ->where('is_gio_hang', 1)
                     ->whereIn('id', $idsSanPham)
-                    ->update([
+                    ->get();
+
+                foreach ($chiTietGioHang as $item) {
+                    $sanPham = SanPham::find($item->id_san_pham);
+
+                    $giaKhuyenMai = $sanPham->gia_khuyen_mai ?? 0;
+                    $donGia = ($sanPham->is_flash_sale == 1 && $giaKhuyenMai > 0)
+                        ? $giaKhuyenMai
+                        : $sanPham->gia_ban;
+
+                    $thanhTien = $item->so_luong * $donGia;
+                    $tongTien += $thanhTien;
+
+                    $item->update([
                         'id_don_hang' => $donHang->id,
                         'is_gio_hang' => 0,
+                        'don_gia'     => $donGia,
+                        'thanh_tien'  => $thanhTien,
                         'tinh_trang'  => 0
                     ]);
+
+                    $this->capNhatSoLuong($sanPham->id, $item->so_luong);
+                }
             }
+
+            // Cập nhật lại tổng tiền đơn hàng
+            $tongTienSauGiam = $tongTien - ($request->so_tien_giam ?? 0);
+            $donHang->tong_tien = $tongTien;
+            $donHang->so_tien_thanh_toan = $tongTienSauGiam;
+            $donHang->save();
 
             DB::commit();
 
             // Nếu COD → xác nhận luôn
             if ($phuongThuc == 1) {
-                $donHang->is_thanh_toan = 0;
-                $donHang->save();
                 return response()->json([
                     'status'  => true,
                     'message' => 'Đặt hàng COD thành công'
@@ -76,7 +109,7 @@ class PaymentController extends Controller
 
             // Nếu MoMo → gọi API MoMo
             return $this->momo_payment(new Request([
-                'total_momo' => $tongTien,
+                'total_momo' => $tongTienSauGiam,
                 'id_dia_chi' => $request->id_dia_chi ?? 1,
                 'ma_don_hang' => $donHang->ma_don_hang
             ]));
@@ -85,6 +118,7 @@ class PaymentController extends Controller
             return response()->json(['status' => false, 'message' => $e->getMessage()]);
         }
     }
+
 
     // Hàm trừ số lượng sản phẩm
     private function capNhatSoLuong($idSanPham, $soLuongMua)
@@ -99,6 +133,7 @@ class PaymentController extends Controller
         }
     }
 
+    // Thanh toán MoMo
     public function momo_payment(Request $request)
     {
         $endpoint   = "https://test-payment.momo.vn/v2/gateway/api/create";
@@ -110,10 +145,7 @@ class PaymentController extends Controller
         $orderInfo   = "Thanh toán MoMo";
         $amount      = $request->total_momo;
 
-        // Dùng chính mã đơn hàng đã tạo
-        $maDonHang   = $request->ma_don_hang;
-        $orderId     = str_replace('DH', '', $maDonHang);
-
+        $orderId     = $request->ma_don_hang;
         $redirectUrl = url('/momo_return');
         $ipnUrl      = url('/momo_ipn');
         $extraData   = "";
@@ -162,24 +194,27 @@ class PaymentController extends Controller
     public function momo_return(Request $request)
     {
         if ($request->resultCode == 0) {
-            $donHang = DonHang::where('ma_don_hang', 'DH' . $request->orderId)->first();
+            $donHang = DonHang::where('ma_don_hang', $request->orderId)->first();
             if ($donHang) {
                 $donHang->is_thanh_toan = 1;
                 $donHang->save();
+                ChiTietDonHang::where('id_don_hang', $donHang->id)
+                ->update(['tinh_trang' => 1]);
             }
             return redirect('http://localhost:5173/khach-hang/don-hang');
         }
         return redirect('/khach-hang/thanh-toan?error=1');
     }
 
-
     public function momo_ipn(Request $request)
     {
         if ($request->resultCode == 0) {
-            $donHang = DonHang::where('ma_don_hang', 'DH' . $request->orderId)->first();
+            $donHang = DonHang::where('ma_don_hang', $request->orderId)->first();
             if ($donHang) {
                 $donHang->is_thanh_toan = 1;
                 $donHang->save();
+                ChiTietDonHang::where('id_don_hang', $donHang->id)
+                ->update(['tinh_trang' => 1]);
             }
         }
         return response()->json(['status' => 'ok']);

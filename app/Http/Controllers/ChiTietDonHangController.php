@@ -20,6 +20,10 @@ class ChiTietDonHangController extends Controller
             ->where('is_gio_hang', 1)
             ->first();
 
+        $donGia = ($sanPham->is_flash_sale == 1 && $sanPham->gia_khuyen_mai > 0)
+            ? $sanPham->gia_khuyen_mai
+            : $sanPham->gia_ban;
+
         if ($chiTiet) {
             $chiTiet->so_luong   += $request->so_luong;
             $chiTiet->thanh_tien  = $chiTiet->so_luong * $chiTiet->don_gia;
@@ -29,8 +33,8 @@ class ChiTietDonHangController extends Controller
                 'id_san_pham'    => $sanPham->id,
                 'id_khach_hang'  => $khachHang->id,
                 'so_luong'       => $request->so_luong,
-                'don_gia'        => $sanPham->gia_ban,
-                'thanh_tien'     => $sanPham->gia_ban * $request->so_luong,
+                'don_gia'        => $donGia,
+                'thanh_tien'     => $donGia * $request->so_luong,
                 'is_gio_hang'    => 1,
                 'tinh_trang'     => 0,
             ]);
@@ -55,7 +59,14 @@ class ChiTietDonHangController extends Controller
                 'san_phams.hinh_anh',
                 'san_phams.ten_san_pham',
                 'san_phams.gia_ban',
-                'san_phams.so_luong as so_luong_ton'
+                'san_phams.gia_khuyen_mai',
+                'san_phams.is_flash_sale',
+                'san_phams.so_luong as so_luong_ton',
+                DB::raw("CASE
+                    WHEN san_phams.is_flash_sale = 1 AND san_phams.gia_khuyen_mai > 0
+                    THEN san_phams.gia_khuyen_mai
+                    ELSE san_phams.gia_ban
+                 END as don_gia_hien_thi")
             )
             ->get();
 
