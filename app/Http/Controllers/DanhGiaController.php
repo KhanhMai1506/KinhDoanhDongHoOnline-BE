@@ -26,6 +26,22 @@ class DanhGiaController extends Controller
         ]);
     }
 
+    public function kiemTraQuyen($id_san_pham)
+    {
+        $user = Auth::guard('sanctum')->user();
+        if (!$user) {
+            return response()->json(['status' => false, 'message' => 'Chưa đăng nhập']);
+        }
+
+        $daMua = \App\Models\ChiTietDonHang::where('id_san_pham', $id_san_pham)
+            ->where('id_khach_hang', $user->id)
+            ->where('is_gio_hang', 0)
+            ->where('tinh_trang', 1) // chỉ cần tình trạng đã xác nhận
+            ->exists();
+
+        return response()->json(['status' => $daMua]);
+    }
+
     public function taoDanhGia(Request $request)
     {
         $request->validate([
@@ -42,11 +58,26 @@ class DanhGiaController extends Controller
             ]);
         }
 
+        // 🔍 Kiểm tra khách hàng đã mua sản phẩm này chưa
+        $daMua = \App\Models\ChiTietDonHang::where('id_san_pham', $request->id_san_pham)
+            ->where('id_khach_hang', $user->id)
+            ->where('is_gio_hang', 0)
+            ->where('tinh_trang', 1) // chỉ cần tình trạng đã xác nhận
+            ->exists();
+
+        if (!$daMua) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Bạn chỉ có thể đánh giá khi đã mua sản phẩm này.'
+            ]);
+        }
+
+        // ✅ Nếu đã mua → lưu đánh giá
         $danhGia = DanhGia::create([
-            'id_san_pham'  => $request->id_san_pham,
+            'id_san_pham'   => $request->id_san_pham,
             'id_khach_hang' => $user->id,
-            'so_sao'       => $request->so_sao,
-            'noi_dung'     => $request->noi_dung,
+            'so_sao'        => $request->so_sao,
+            'noi_dung'      => $request->noi_dung,
         ]);
 
         return response()->json([
@@ -55,6 +86,7 @@ class DanhGiaController extends Controller
             'data'    => $danhGia
         ]);
     }
+
     public function thongKe($id_san_pham)
     {
         $danhGia = DanhGia::where('id_san_pham', $id_san_pham);
