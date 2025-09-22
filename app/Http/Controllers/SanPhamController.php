@@ -10,7 +10,7 @@ class SanPhamController extends Controller
 {
     public function getDataNoiBat()
     {
-        $data = SanPham::where('is_noi_bat', 1)->take(4)->get();
+        $data = SanPham::where('is_noi_bat', 1)->get();
         return response()->json([
             'status' => true,
             'data' => $data
@@ -19,7 +19,7 @@ class SanPhamController extends Controller
 
     public function getDataFlashSale()
     {
-        $data = SanPham::where('is_flash_sale', 1)->take(4)->get();
+        $data = SanPham::where('is_flash_sale', 1)->get();
         return response()->json([
             'status' => true,
             'data' => $data
