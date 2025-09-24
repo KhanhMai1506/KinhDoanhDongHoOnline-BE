@@ -36,7 +36,7 @@ class DanhGiaController extends Controller
         $daMua = \App\Models\ChiTietDonHang::where('id_san_pham', $id_san_pham)
             ->where('id_khach_hang', $user->id)
             ->where('is_gio_hang', 0)
-            ->where('tinh_trang', 1) // chỉ cần tình trạng đã xác nhận
+            ->where('tinh_trang', 3)
             ->exists();
 
         return response()->json(['status' => $daMua]);
@@ -62,7 +62,7 @@ class DanhGiaController extends Controller
         $daMua = \App\Models\ChiTietDonHang::where('id_san_pham', $request->id_san_pham)
             ->where('id_khach_hang', $user->id)
             ->where('is_gio_hang', 0)
-            ->where('tinh_trang', 1) // chỉ cần tình trạng đã xác nhận
+            ->where('tinh_trang', 3)
             ->exists();
 
         if (!$daMua) {
