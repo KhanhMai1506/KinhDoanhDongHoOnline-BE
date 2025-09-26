@@ -10,7 +10,7 @@ class SanPhamController extends Controller
 {
     public function getDataNoiBat()
     {
-        $data = SanPham::where('is_noi_bat', 1)->take(4)->get();
+        $data = SanPham::where('is_noi_bat', 1)->get();
         return response()->json([
             'status' => true,
             'data' => $data
@@ -19,7 +19,7 @@ class SanPhamController extends Controller
 
     public function getDataFlashSale()
     {
-        $data = SanPham::where('is_flash_sale', 1)->take(4)->get();
+        $data = SanPham::where('is_flash_sale', 1)->get();
         return response()->json([
             'status' => true,
             'data' => $data
@@ -193,19 +193,32 @@ class SanPhamController extends Controller
                 'is_flash_sale' => $is_flash_sale
             ];
 
-            // Nếu tắt Flash Sale thì reset giá giảm
-            if ($is_flash_sale == 0) {
-                $updateData['gia_giam'] = null;
+            if ($is_flash_sale == 1) {
+                // 🔥 Random % giảm từ 10 - 50
+                $tyLeGiam = rand(10, 50);
+
+                $sanPham = SanPham::find($request->id);
+                if ($sanPham) {
+                    $giaKhuyenMai = $sanPham->gia_ban * (1 - $tyLeGiam / 100);
+
+                    $updateData['phan_tram'] = $tyLeGiam;
+                    $updateData['gia_khuyen_mai'] = $giaKhuyenMai;
+                }
+            } else {
+                // Nếu tắt Flash Sale thì reset
+                $updateData['phan_tram'] = null;
+                $updateData['gia_khuyen_mai'] = null;
             }
 
             SanPham::find($request->id)->update($updateData);
 
             return response()->json([
                 'status' => true,
-                'message' => "Đã đổi tình trạng sản phẩm " . $request->ten_san_pham . " thành công.",
+                'message' => "Đã đổi tình trạng Flash Sale cho sản phẩm " . $request->ten_san_pham . " thành công.",
             ]);
         }
     }
+
 
 
     public function search(Request $request)

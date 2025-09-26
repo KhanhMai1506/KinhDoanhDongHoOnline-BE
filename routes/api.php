@@ -36,6 +36,7 @@ Route::post('/khach-hang/gio-hang/delete', [ChiTietDonHangController::class, 'de
 Route::post('/khach-hang/gio-hang/update', [ChiTietDonHangController::class, 'updateGioHang'])->middleware("KhachHangMiddle");
 
 Route::post('/khach-hang/don-hang/create', [DonHangController::class, 'store'])->middleware("KhachHangMiddle");
+Route::put('/khach-hang/huy-don-hang/{id}', [DonHangController::class, 'huyDonHang'])->middleware("KhachHangMiddle");
 Route::get('/khach-hang/lich-su-don-hang', [DonHangController::class, 'getDataLS'])->middleware("KhachHangMiddle");
 
 Route::post('/khach-hang/thanh-toan', [PaymentController::class, 'thanhToan'])->middleware("KhachHangMiddle");
@@ -105,7 +106,7 @@ Route::post('/admin/ma-giam-gia/doi-trang-thai', [MaGiamGiaController::class, 'd
 Route::post('/admin/ma-giam-gia/delete', [MaGiamGiaController::class, 'destroy'])->middleware("AdminMiddle");
 
 Route::get('/admin/lich-su-don-hang', [DonHangController::class, 'getDataLSAD'])->middleware("AdminMiddle");
-
+Route::put('/admin/cap-nhat-tinh-trang/{id}', [DonHangController::class, 'capNhatTinhTrang'])->middleware("AdminMiddle");
 
 Route::get('/admin/danh-gia/data', [DanhGiaController::class, 'layDanhGiaAdmin'])->middleware('AdminMiddle');
 Route::post('/admin/danh-gia/{id}/phan-hoi', [DanhGiaController::class, 'phanHoi'])->middleware('AdminMiddle');

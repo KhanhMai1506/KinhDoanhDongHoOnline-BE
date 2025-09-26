@@ -95,6 +95,44 @@ class DonHangController extends Controller
         }
     }
 
+    public function huyDonHang($id)
+    {
+        $khachHang = Auth::guard('sanctum')->user();
+        $chiTiet = ChiTietDonHang::where('id', $id)
+            ->where('id_khach_hang', $khachHang->id)
+            ->first();
+
+        if (!$chiTiet) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy đơn hàng!',
+            ], 404);
+        }
+
+        if ($chiTiet->tinh_trang == 4) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Đơn hàng đã hủy trước đó!',
+            ], 400);
+        }
+
+        if ($chiTiet->tinh_trang >= 2) { // ví dụ: nếu đã vận chuyển thì không cho hủy
+            return response()->json([
+                'status' => false,
+                'message' => 'Đơn hàng đang vận chuyển hoặc đã giao, không thể hủy!',
+            ], 400);
+        }
+
+        $chiTiet->tinh_trang = 4; // Hủy đơn
+        $chiTiet->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Hủy đơn hàng thành công!',
+            'data' => $chiTiet
+        ]);
+    }
+
     public function getDataLS()
     {
         $khachHang  = Auth::guard('sanctum')->user();
@@ -120,6 +158,52 @@ class DonHangController extends Controller
             ->get();
         return response()->json([
             'data'    =>  $data,
+        ]);
+    }
+
+    public function capNhatTinhTrang(Request $request, $id)
+    {
+        $chiTiet = ChiTietDonHang::find($id);
+
+        if (!$chiTiet) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Chi tiết đơn hàng không tồn tại!'
+            ], 404);
+        }
+
+        $request->validate([
+            'tinh_trang' => 'required|integer|min:0|max:4',
+        ]);
+
+        // Cập nhật tình trạng cho chi tiết
+        $chiTiet->tinh_trang = $request->tinh_trang;
+        $chiTiet->save();
+
+        // Nếu tình trạng = 3 thì cập nhật is_thanh_toan trong đơn hàng
+        if ($request->tinh_trang == 3) {
+            $donHang = $chiTiet->donHang;
+            if ($donHang) {
+                // 👉 Nếu muốn chỉ cần 1 chi tiết giao là cả đơn thanh toán
+                $donHang->is_thanh_toan = 1;
+                $donHang->save();
+
+                // 👉 Nếu muốn tất cả chi tiết phải giao mới đánh dấu:
+                /*
+            $allChiTiet = $donHang->chiTietDonHangs; // hasMany trong DonHang
+            $allDone = $allChiTiet->every(fn($ct) => $ct->tinh_trang == 3);
+            if ($allDone) {
+                $donHang->is_thanh_toan = 1;
+                $donHang->save();
+            }
+            */
+            }
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Cập nhật tình trạng thành công!',
+            'data' => $chiTiet
         ]);
     }
 }
