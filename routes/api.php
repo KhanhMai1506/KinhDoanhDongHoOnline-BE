@@ -12,6 +12,7 @@ use App\Http\Controllers\MaGiamGiaController;
 use App\Http\Controllers\DonHangController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FirebaseAuthController;
 
 Route::post('/khach-hang/doi-mat-khau', [KhachHangController::class, 'doiMatKhau']);
 Route::post('/admin/doi-mat-khau', [AdminController::class, 'doiMatKhau']);
@@ -115,4 +116,10 @@ Route::post('/admin/danh-gia/tim-kiem', [DanhGiaController::class, 'timKiemDanhG
 
 Route::get('/auth/google/redirect', [KhachHangController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [KhachHangController::class, 'handleGoogleCallback']);
+
+
+Route::get('/firebase/custom-token', [FirebaseAuthController::class, 'createToken'])->middleware("KhachHangMiddle");
+
+
+
 
