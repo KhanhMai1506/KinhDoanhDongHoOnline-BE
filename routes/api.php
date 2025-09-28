@@ -10,6 +10,7 @@ use App\Http\Controllers\ChiTietDonHangController;
 use App\Http\Controllers\DanhGiaController;
 use App\Http\Controllers\MaGiamGiaController;
 use App\Http\Controllers\DonHangController;
+use App\Http\Controllers\ThongKeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -112,6 +113,10 @@ Route::get('/admin/danh-gia/data', [DanhGiaController::class, 'layDanhGiaAdmin']
 Route::post('/admin/danh-gia/{id}/phan-hoi', [DanhGiaController::class, 'phanHoi'])->middleware('AdminMiddle');
 Route::post('/admin/danh-gia/delete', [DanhGiaController::class, 'destroy'])->middleware("AdminMiddle");
 Route::post('/admin/danh-gia/tim-kiem', [DanhGiaController::class, 'timKiemDanhGia'])->middleware("AdminMiddle");
+
+Route::post('/admin/thong-ke-1', [ThongKeController::class, 'thongKe1'])->middleware("AdminMiddle");
+Route::post('/admin/thong-ke-da-ban', [ThongKeController::class, 'thongKeDaBan'])->middleware("AdminMiddle");
+
 
 Route::get('/auth/google/redirect', [KhachHangController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [KhachHangController::class, 'handleGoogleCallback']);

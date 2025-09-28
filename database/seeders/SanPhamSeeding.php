@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -367,6 +368,9 @@ class SanPhamSeeding extends Seeder
             $giaKhuyenMai = $giaBan * (100 - $phanTram) / 100;
         }
 
+        $startDate = Carbon::create(2025, 1, 1);
+        $endDate   = Carbon::now();
+
         return [
             'id_danh_muc'       => $idDanhMuc,
             'ten_san_pham'      => $ten,
@@ -379,6 +383,8 @@ class SanPhamSeeding extends Seeder
             'gia_khuyen_mai'    => $giaKhuyenMai,
             'is_noi_bat'        => $isNoiBat,
             'is_flash_sale'     => $isFlashSale,
+            'created_at'        => Carbon::createFromTimestamp(rand($startDate->timestamp, $endDate->timestamp)),
+            'updated_at'        => Carbon::now(),
         ];
     }
 }
