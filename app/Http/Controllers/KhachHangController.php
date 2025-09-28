@@ -167,6 +167,31 @@ class KhachHangController extends Controller
         ], 401);
     }
 
+    public function getKhachHangByIds(Request $request)
+    {
+        $login = Auth::guard('sanctum')->user();
+        if ($login) {
+            // Validate input
+            $request->validate([
+                'ids' => 'required|array',
+                'ids.*' => 'integer|min:1'
+            ]);
+
+            $ids = $request->ids;
+            $data = KhachHang::whereIn('id', $ids)->get();
+
+            return response()->json([
+                'status' => true,
+                'data' => $data,
+                'count' => $data->count()
+            ]);
+        }
+        return response()->json([
+            'status' => false,
+            'message' => 'Chưa đăng nhập hoặc token không hợp lệ'
+        ], 401);
+    }
+
     public function kichHoatTaiKhoan(Request $request)
     {
         $login = Auth::guard('sanctum')->user();
