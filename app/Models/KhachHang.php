@@ -20,6 +20,7 @@ class KhachHang extends Authenticatable
         'ho_va_ten',
         'password',
         'hash_active',
+        'hash_reset',
         'is_active',
         'is_block',
         'google_id'

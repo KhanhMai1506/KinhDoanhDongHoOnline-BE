@@ -15,9 +15,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/khach-hang/doi-mat-khau', [KhachHangController::class, 'doiMatKhau']);
 Route::post('/admin/doi-mat-khau', [AdminController::class, 'doiMatKhau']);
-Route::post('/khach-hang/dang-nhap', [KhachHangController::class, 'dangNhap']);
 
+
+Route::post('/khach-hang/dang-nhap', [KhachHangController::class, 'dangNhap']);
 Route::post('/khach-hang/dang-ky', [KhachHangController::class, 'dangKy']);
+Route::post('/khach-hang/quen-mat-khau', [KhachHangController::class, 'quenMK']);
+Route::post('/khach-hang/doi-mat-khau-moi', [KhachHangController::class, 'doiMK']);
 Route::post('/khach-hang/kich-hoat', [KhachHangController::class, 'kichHoat']);
 Route::get('/khach-hang/profile/data', [KhachHangController::class, 'getDataProfile'])->middleware("KhachHangMiddle");
 Route::post('/khach-hang/profile/update', [KhachHangController::class, 'updateProfile'])->middleware("KhachHangMiddle");

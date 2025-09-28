@@ -69,7 +69,7 @@ a[x-apple-data-detectors] {
                     <tr style="border-collapse:collapse">
                         <td align="center"
                             style="Margin:0;padding-left:10px;padding-right:10px;padding-top:25px;padding-bottom:25px;font-size:0">
-                            <img src="https://dzfullstack.com/assets/images/logo-img.png"
+                            <img src="/app/public/Images/logo.png"
                                 alt
                                 style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic"
                                 width="200"></td>
@@ -122,7 +122,7 @@ a[x-apple-data-detectors] {
                   <td align="left" style="padding:0;Margin:0;width:560px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="center" style="padding:0;Margin:0;padding-bottom:35px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;color:#333333;font-size:12px">© <a href="http://localhost:5173/" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#333333;font-size:12px">D</a>ZFullStack, All Right Reserved.</p></td>
+                      <td align="center" style="padding:0;Margin:0;padding-bottom:35px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;color:#333333;font-size:12px">© <a href="http://localhost:5173/" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#333333;font-size:12px"></a>TopWatch, All Right Reserved.</p></td>
                      </tr>
                    </table></td>
                  </tr>
