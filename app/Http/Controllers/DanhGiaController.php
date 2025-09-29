@@ -110,9 +110,17 @@ class DanhGiaController extends Controller
     {
         $login = Auth::guard('sanctum')->user();
         if ($login) {
-            $data = DanhGia::with('khachHang:id,ho_va_ten,hinh_anh')
+            $data = DanhGia::with([
+                'khachHang:id,ho_va_ten,hinh_anh',
+                'sanPham:id,ten_san_pham'
+            ])
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->get()
+                ->map(function ($item) {
+                    $item->ngay_danh_gia = Carbon::parse($item->created_at)->format('d-m-Y H:i');
+                    $item->ten_san_pham = $item->sanPham->ten_san_pham ?? null;
+                    return $item;
+                });
 
             return response()->json([
                 'status' => true,
@@ -124,6 +132,7 @@ class DanhGiaController extends Controller
             'message' => 'Chưa đăng nhập hoặc token không hợp lệ'
         ], 401);
     }
+
 
     public function phanHoi(Request $request, $id)
     {
@@ -193,9 +202,17 @@ class DanhGiaController extends Controller
             $data = DanhGia::whereHas('khachHang', function ($query) use ($keyword) {
                 $query->where('ho_va_ten', 'like', '%' . $keyword . '%');
             })
-                ->with('khachHang:id,ho_va_ten,hinh_anh')
+                ->with([
+                    'khachHang:id,ho_va_ten,hinh_anh',
+                    'sanPham:id,ten_san_pham'
+                ])
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->get()
+                ->map(function ($item) {
+                    $item->ngay_danh_gia = Carbon::parse($item->created_at)->format('d-m-Y H:i');
+                    $item->ten_san_pham = $item->sanPham->ten_san_pham ?? null;
+                    return $item;
+                });
 
             return response()->json([
                 'status' => true,
