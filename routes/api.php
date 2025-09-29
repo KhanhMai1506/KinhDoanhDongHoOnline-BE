@@ -13,6 +13,7 @@ use App\Http\Controllers\DonHangController;
 use App\Http\Controllers\ThongKeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FirebaseAuthController;
 
 Route::post('/khach-hang/doi-mat-khau', [KhachHangController::class, 'doiMatKhau']);
 Route::post('/admin/doi-mat-khau', [AdminController::class, 'doiMatKhau']);
@@ -94,6 +95,7 @@ Route::post('/admin/danh-muc/update', [DanhMucController::class, 'update'])->mid
 Route::post('/admin/danh-muc/doi-trang-thai', [DanhMucController::class, 'changeStatus'])->middleware("AdminMiddle");
 
 Route::get('/admin/khach-hang/data', [KhachHangController::class, 'dataKhachHang'])->middleware("AdminMiddle");
+Route::post('/admin/khach-hang/get-by-ids', [KhachHangController::class, 'getKhachHangByIds'])->middleware("AdminMiddle");
 Route::post('/admin/khach-hang/kich-hoat-tai-khoan', [KhachHangController::class, 'kichHoatTaiKhoan'])->middleware("AdminMiddle");
 Route::post('/admin/khach-hang/doi-trang-thai', [KhachHangController::class, 'doiTrangThaiKhachHang'])->middleware("AdminMiddle");
 Route::post('/admin/khach-hang/update', [KhachHangController::class, 'updateTaiKhoan'])->middleware("AdminMiddle");
@@ -123,4 +125,10 @@ Route::post('/admin/thong-ke-da-ban', [ThongKeController::class, 'thongKeDaBan']
 
 Route::get('/auth/google/redirect', [KhachHangController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [KhachHangController::class, 'handleGoogleCallback']);
+
+
+Route::get('/firebase/custom-token', [FirebaseAuthController::class, 'createToken'])->middleware("KhachHangMiddle");
+
+
+
 
