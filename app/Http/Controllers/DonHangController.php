@@ -67,27 +67,12 @@ class DonHangController extends Controller
                 $chiTiet->save();
             }
         }
-        // Gửi mail
-        // $x['ho_ten']                    = $khachHang->ho_va_ten;
-        // $x['so_tien_thanh_toan']        = $request->so_tien_thanh_toan;
-        // $x['link_qr']                   = "https://img.vietqr.io/image/MBBank-1910061030119-qr_only.png?amount=" . $request->so_tien_thanh_toan . "&addInfo=DZ" . $DonHang->id;
-        // $x['ds_for']    =  ChiTietDonHang::where('id_khach_hang', $khachHang->id)
-        //     ->where('id_don_hang', $DonHang->id)
-        //     ->where('is_gio_hang', 0)
-        //     ->join('san_phams', 'chi_tiet_don_hangs.id_san_pham', 'san_phams.id')
-        //     ->select('chi_tiet_don_hangs.*', 'san_phams.hinh_anh',)
-        //     ->get();
         if ($DonHang->phuong_thuc == 0) {
-
-            // Mail::to($khachHang->email)->send(new MasterMail('Xác Nhận Đơn Hàng Thanh Toán Online', 'xac_nhan_don_hang', $x));
-
             return response()->json([
                 'status'    =>  true,
                 'message'   =>  'Mua hàng thành công!'
             ]);
         } else {
-            // Mail::to($khachHang->email)->send(new MasterMail('Xác Nhận Đơn Hàng Thanh Toán COD', 'xac_nhan_don_hang_cod', $x));
-
             return response()->json([
                 'status'    =>  true,
                 'message'   =>  'Mua hàng thành công!'

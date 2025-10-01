@@ -25,7 +25,7 @@ return new class extends Migration
             $table->unsignedInteger('so_luong')->default(1);
             $table->decimal('thanh_tien', 15, 2)->default(0);
             $table->string('ghi_chu')->nullable();
-            $table->integer('tinh_trang')->default(0)->comment('0: Chờ xác nhận, 1: Đang giao, 2: Hoàn tất, 3: Hủy');
+            $table->integer('tinh_trang')->default(0)->comment('0: Chờ xác nhận, 1: Đã xác nhận, 2: Đang vận chuyển, 3: Đã giao');
 
             $table->timestamps();
 

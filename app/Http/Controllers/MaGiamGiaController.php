@@ -36,7 +36,7 @@ class MaGiamGiaController extends Controller
         } else {
             return response()->json([
                 'status' => false,
-                'message' => "Mã giảm giá không tồn tại.",
+                'message' => "Mã giảm giá đã hết hạn.",
             ]);
         }
     }

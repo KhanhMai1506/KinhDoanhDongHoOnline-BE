@@ -199,7 +199,7 @@ class PaymentController extends Controller
                 $donHang->is_thanh_toan = 1;
                 $donHang->save();
                 ChiTietDonHang::where('id_don_hang', $donHang->id)
-                ->update(['tinh_trang' => 1]);
+                ->update(['tinh_trang' => 0]);
             }
             return redirect('http://localhost:5173/khach-hang/don-hang');
         }
@@ -214,7 +214,7 @@ class PaymentController extends Controller
                 $donHang->is_thanh_toan = 1;
                 $donHang->save();
                 ChiTietDonHang::where('id_don_hang', $donHang->id)
-                ->update(['tinh_trang' => 1]);
+                ->update(['tinh_trang' => 0]);
             }
         }
         return response()->json(['status' => 'ok']);
