@@ -153,7 +153,7 @@ class DonHangController extends Controller
         if (!$chiTiet) {
             return response()->json([
                 'status' => false,
-                'message' => 'Chi tiết đơn hàng không tồn tại!'
+                'message' => 'Đơn hàng không tồn tại!'
             ], 404);
         }
 
@@ -169,19 +169,8 @@ class DonHangController extends Controller
         if ($request->tinh_trang == 3) {
             $donHang = $chiTiet->donHang;
             if ($donHang) {
-                // 👉 Nếu muốn chỉ cần 1 chi tiết giao là cả đơn thanh toán
                 $donHang->is_thanh_toan = 1;
                 $donHang->save();
-
-                // 👉 Nếu muốn tất cả chi tiết phải giao mới đánh dấu:
-                /*
-            $allChiTiet = $donHang->chiTietDonHangs; // hasMany trong DonHang
-            $allDone = $allChiTiet->every(fn($ct) => $ct->tinh_trang == 3);
-            if ($allDone) {
-                $donHang->is_thanh_toan = 1;
-                $donHang->save();
-            }
-            */
             }
         }
 
@@ -190,5 +179,31 @@ class DonHangController extends Controller
             'message' => 'Cập nhật tình trạng thành công!',
             'data' => $chiTiet
         ]);
+    }
+
+    public function xacNhanDaGiao($id)
+    {
+        $chiTiet = ChiTietDonHang::find($id);
+
+        if (!$chiTiet) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Đơn hàng không tồn tại!'
+            ], 404);
+        }
+
+        if ($chiTiet->tinh_trang == 2) {
+            $chiTiet->tinh_trang = 3; // cập nhật sang "Đã giao"
+            $chiTiet->save();
+
+            $donHang = $chiTiet->donHang;
+            if ($donHang) {
+                $donHang->is_thanh_toan = 1;
+                $donHang->save();
+            }
+            return response()->json(['message' => 'Đã xác nhận đơn hàng đã giao thành công!']);
+        }
+
+        return response()->json(['message' => 'Đơn hàng không ở trạng thái vận chuyển!'], 400);
     }
 }

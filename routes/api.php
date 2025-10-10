@@ -31,6 +31,7 @@ Route::get('/khach-hang/dia-chi/data', [DiaChiController::class, 'getData'])->mi
 Route::post('/khach-hang/dia-chi/create', [DiaChiController::class, 'store'])->middleware("KhachHangMiddle");
 Route::post('/khach-hang/dia-chi/update', [DiaChiController::class, 'update'])->middleware("KhachHangMiddle");
 Route::post('/khach-hang/dia-chi/delete', [DiaChiController::class, 'destroy'])->middleware("KhachHangMiddle");
+Route::put('/khach-hang/xac-nhan-da-giao/{id}', [DonHangController::class, 'xacNhanDaGiao'])->middleware("KhachHangMiddle");
 Route::get('/kiem-tra-khach-hang', [KhachHangController::class, 'kiemTraKhachHang']);
 
 Route::post('/khach-hang/dang-xuat', [KhachHangController::class, 'logout']);
