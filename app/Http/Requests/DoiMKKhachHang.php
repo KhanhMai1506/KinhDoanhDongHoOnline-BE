@@ -23,8 +23,8 @@ class DoiMKKhachHang extends FormRequest
     {
         return [
             'id'          => 'required|exists:khach_hangs,hash_reset',
-'password'    => 'required|min:6|max:30',
-'re_password' => 'required|same:password',
+            'password'    => 'required|min:6|max:30',
+            're_password' => 'required|same:password',
         ];
     }
 

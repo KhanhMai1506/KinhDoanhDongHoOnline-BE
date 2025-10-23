@@ -86,7 +86,7 @@ class KhachHangController extends Controller
     }
 
     public function dangNhap(KhachHangDangNhapRequest $request)
-{
+    {
     $check  = Auth::guard('khachhang')->attempt([
         'email'     => $request->email,
         'password'  => $request->password
@@ -97,7 +97,7 @@ class KhachHangController extends Controller
 
         // Kiểm tra xem đã kích hoạt chưa
         if ($khach_hang->is_active == 0) {
-            Auth::guard('khachhang')->logout(); // logout ngay
+            Auth::guard('khachhang')->logout();
             return response()->json([
                 'status'  => false,
                 'message' => "Vui lòng kích hoạt email trước khi đăng nhập!"
@@ -116,7 +116,7 @@ class KhachHangController extends Controller
             'message' => "Tài khoản hoặc mật khẩu không đúng!",
         ]);
     }
-}
+    }
 
     public function kiemTraKhachHang()
     {
@@ -184,7 +184,6 @@ class KhachHangController extends Controller
     {
         $login = Auth::guard('sanctum')->user();
         if ($login) {
-            // Validate input
             $request->validate([
                 'ids' => 'required|array',
                 'ids.*' => 'integer|min:1'
@@ -387,7 +386,7 @@ class KhachHangController extends Controller
         return Socialite::driver('google')->stateless()->redirect();
     }
 
- // Callback sau khi chọn Google account
+ 
     public function handleGoogleCallback()
     {
         try {
@@ -432,7 +431,7 @@ class KhachHangController extends Controller
     public function doiMK(DoiMKKhachHang $request) {
         $khachHang = KhachHang::where('hash_reset', $request->id)->first();
         $khachHang->password   = bcrypt($request->password);
-        $khachHang->hash_reset = null; // xoá token reset sau khi dùng
+        $khachHang->hash_reset = null; 
         $khachHang->save();
 
         return response()->json([
