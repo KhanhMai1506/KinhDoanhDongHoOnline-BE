@@ -6,6 +6,7 @@ use App\Http\Requests\KhachHangDangKyRequest;
 use App\Http\Requests\KhachHangDangNhapRequest;
 use App\Http\Requests\KhachHangDoiMatKhauRequest;
 use App\Http\Requests\DoiMKKhachHang;
+use App\Http\Requests\QuenMatKhauRequest;
 use App\Mail\MasterMail;
 use App\Models\KhachHang;
 use Illuminate\Http\Request;
@@ -440,7 +441,7 @@ class KhachHangController extends Controller
         ]);
     }
 
-    public function quenMK(Request $request) {
+    public function quenMK(QuenMatKhauRequest $request) {
         $khach_hang = KhachHang::where('email', $request->email)->first();
         if($khach_hang) {
             $hash_reset         = Str::uuid();
