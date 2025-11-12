@@ -199,8 +199,13 @@ class DanhGiaController extends Controller
         if ($login) {
             $keyword = $request->keyword;
 
-            $data = DanhGia::whereHas('khachHang', function ($query) use ($keyword) {
-                $query->where('ho_va_ten', 'like', '%' . $keyword . '%');
+            $data = DanhGia::where(function ($query) use ($keyword) {
+                $query->whereHas('khachHang', function ($q) use ($keyword) {
+                    $q->where('ho_va_ten', 'like', '%' . $keyword . '%');
+                })
+                    ->orWhereHas('sanPham', function ($q) use ($keyword) {
+                        $q->where('ten_san_pham', 'like', '%' . $keyword . '%');
+                    });
             })
                 ->with([
                     'khachHang:id,ho_va_ten,hinh_anh',
@@ -213,6 +218,7 @@ class DanhGiaController extends Controller
                     $item->ten_san_pham = $item->sanPham->ten_san_pham ?? null;
                     return $item;
                 });
+
 
             return response()->json([
                 'status' => true,
