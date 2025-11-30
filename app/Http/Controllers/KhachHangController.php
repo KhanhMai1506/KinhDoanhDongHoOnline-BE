@@ -86,37 +86,37 @@ class KhachHangController extends Controller
     }
 
     public function dangNhap(KhachHangDangNhapRequest $request)
-{
-    $check  = Auth::guard('khachhang')->attempt([
-        'email'     => $request->email,
-        'password'  => $request->password
-    ]);
+    {
+        $check  = Auth::guard('khachhang')->attempt([
+            'email'     => $request->email,
+            'password'  => $request->password
+        ]);
 
-    if ($check) {
-        $khach_hang = Auth::guard('khachhang')->user();
+        if ($check) {
+            $khach_hang = Auth::guard('khachhang')->user();
 
-        // Kiểm tra xem đã kích hoạt chưa
-        if ($khach_hang->is_active == 0) {
-            Auth::guard('khachhang')->logout(); // logout ngay
+            // Kiểm tra xem đã kích hoạt chưa
+            if ($khach_hang->is_active == 0) {
+                Auth::guard('khachhang')->logout(); // logout ngay
+                return response()->json([
+                    'status'  => false,
+                    'message' => "Vui lòng kích hoạt email trước khi đăng nhập!"
+                ]);
+            }
+
+            return response()->json([
+                'status'  => true,
+                'message' => "Đã đăng nhập thành công!",
+                'token'   => $khach_hang->createToken('token_khach_hang')->plainTextToken,
+                'ten_kh'  => $khach_hang->ho_va_ten
+            ]);
+        } else {
             return response()->json([
                 'status'  => false,
-                'message' => "Vui lòng kích hoạt email trước khi đăng nhập!"
+                'message' => "Tài khoản hoặc mật khẩu không đúng!",
             ]);
         }
-
-        return response()->json([
-            'status'  => true,
-            'message' => "Đã đăng nhập thành công!",
-            'token'   => $khach_hang->createToken('token_khach_hang')->plainTextToken,
-            'ten_kh'  => $khach_hang->ho_va_ten
-        ]);
-    } else {
-        return response()->json([
-            'status'  => false,
-            'message' => "Tài khoản hoặc mật khẩu không đúng!",
-        ]);
     }
-}
 
     public function kiemTraKhachHang()
     {
@@ -363,7 +363,8 @@ class KhachHangController extends Controller
         ]);
     }
 
-     public function doiMatKhau(KhachHangDoiMatKhauRequest $request) {
+    public function doiMatKhau(KhachHangDoiMatKhauRequest $request)
+    {
         $khach_hang = Auth::guard('sanctum')->user();
 
         if (!Hash::check($request->current_password, $khach_hang->password)) {
@@ -372,7 +373,7 @@ class KhachHangController extends Controller
                 'message' => 'Mật khẩu cũ không chính xác'
             ], 400);
         }
-        
+
         $khach_hang->password = Hash::make($request->new_password);
         $khach_hang->save();
 
@@ -387,7 +388,7 @@ class KhachHangController extends Controller
         return Socialite::driver('google')->stateless()->redirect();
     }
 
- // Callback sau khi chọn Google account
+    // Callback sau khi chọn Google account
     public function handleGoogleCallback()
     {
         try {
@@ -407,7 +408,7 @@ class KhachHangController extends Controller
                     'is_block'     => 0,
                     'hash_active'  => null,
                     'hinh_anh'     => $googleUser->getAvatar(),
-                    'so_dien_thoai'=> '',
+                    'so_dien_thoai' => '',
                 ]);
             } else if (!$user->google_id) {
                 $user->google_id = $googleUser->getId();
@@ -421,7 +422,6 @@ class KhachHangController extends Controller
                 'token' => $token,
                 'user'  => $user
             ]);
-
         } catch (\Exception $e) {
             return view('auth.google-popup', [
                 'error' => $e->getMessage()
@@ -429,7 +429,8 @@ class KhachHangController extends Controller
         }
     }
 
-    public function doiMK(DoiMKKhachHang $request) {
+    public function doiMK(DoiMKKhachHang $request)
+    {
         $khachHang = KhachHang::where('hash_reset', $request->id)->first();
         $khachHang->password   = bcrypt($request->password);
         $khachHang->hash_reset = null; // xoá token reset sau khi dùng
@@ -441,12 +442,13 @@ class KhachHangController extends Controller
         ]);
     }
 
-    public function quenMK(Request $request) {
+    public function quenMK(Request $request)
+    {
         $khach_hang = KhachHang::where('email', $request->email)->first();
-        if($khach_hang) {
+        if ($khach_hang) {
             $hash_reset         = Str::uuid();
             $x['ho_va_ten']     = $khach_hang->ho_va_ten;
-            $x['link']          = 'http://localhost:5173/khach-hang/doi-mat-khau-moi/' .$hash_reset;
+            $x['link']          = 'http://localhost:5173/khach-hang/doi-mat-khau-moi/' . $hash_reset;
             Mail::to($request->email)->send(new MasterMail('Đổi Mật Khẩu Của Bạn', 'quen_mat_khau', $x));
             $khach_hang->hash_reset = $hash_reset;
             $khach_hang->save();
@@ -462,7 +464,8 @@ class KhachHangController extends Controller
         }
     }
 
-    public function kichHoat(Request $request) {
+    public function kichHoat(Request $request)
+    {
         $khach_hang = KhachHang::where('hash_active', $request->id_khach_hang)->first();
         if ($khach_hang && $khach_hang->is_active == 0) {
             $khach_hang->is_active = 1;

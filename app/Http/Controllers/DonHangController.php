@@ -94,29 +94,39 @@ class DonHangController extends Controller
             ], 404);
         }
 
-        if ($chiTiet->tinh_trang == 4) {
+        if (in_array($chiTiet->tinh_trang, [4, 5])) {
             return response()->json([
                 'status' => false,
-                'message' => 'Đơn hàng đã hủy trước đó!',
+                'message' => 'Đơn hàng đã bị hủy hoặc đang hoàn tiền!',
             ], 400);
         }
 
-        if ($chiTiet->tinh_trang >= 2) { // ví dụ: nếu đã vận chuyển thì không cho hủy
+        if ($chiTiet->tinh_trang >= 2) {
             return response()->json([
                 'status' => false,
                 'message' => 'Đơn hàng đang vận chuyển hoặc đã giao, không thể hủy!',
             ], 400);
         }
 
-        $chiTiet->tinh_trang = 4; // Hủy đơn
+        // ✅ Kiểm tra nếu đơn hàng là MoMo và đã thanh toán
+        if ($chiTiet->donHang && $chiTiet->donHang->phuong_thuc == 0 && $chiTiet->donHang->is_thanh_toan == 1) {
+            $chiTiet->tinh_trang = 5; // Chờ hoàn tiền
+        } else {
+            $chiTiet->tinh_trang = 4; // Hủy bình thường
+        }
+
         $chiTiet->save();
 
         return response()->json([
             'status' => true,
-            'message' => 'Hủy đơn hàng thành công!',
+            'message' => $chiTiet->tinh_trang == 5
+                ? 'Đơn hàng đã được chuyển sang trạng thái Chờ hoàn tiền!'
+                : 'Hủy đơn hàng thành công!',
             'data' => $chiTiet
         ]);
     }
+
+
 
     public function getDataLS()
     {
@@ -139,7 +149,7 @@ class DonHangController extends Controller
             ->join('san_phams', 'chi_tiet_don_hangs.id_san_pham', 'san_phams.id')
             ->join('khach_hangs', 'chi_tiet_don_hangs.id_khach_hang', 'khach_hangs.id')
             ->join('dia_chis', 'don_hangs.id_dia_chi', 'dia_chis.id')
-            ->select('don_hangs.ma_don_hang', 'don_hangs.is_thanh_toan', 'don_hangs.phuong_thuc', 'dia_chis.ten_nguoi_nhan', 'dia_chis.dia_chi', 'dia_chis.so_dien_thoai', 'chi_tiet_don_hangs.*')
+            ->select('don_hangs.ma_don_hang', 'don_hangs.is_thanh_toan', 'don_hangs.phuong_thuc', 'don_hangs.created_at', 'dia_chis.ten_nguoi_nhan', 'dia_chis.dia_chi', 'dia_chis.so_dien_thoai', 'chi_tiet_don_hangs.*')
             ->get();
         return response()->json([
             'data'    =>  $data,

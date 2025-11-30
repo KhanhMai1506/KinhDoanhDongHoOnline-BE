@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DanhMuc;
 use App\Models\SanPham;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,20 +26,29 @@ class SanPhamController extends Controller
             'data' => $data
         ]);
     }
-    public function laySanPhamTuDanhMuc($id_danh_muc)
+    public function laySanPhamTuDanhMuc($slug)
     {
-        $data   = SanPham::where('id_danh_muc', $id_danh_muc)->where('tinh_trang', 1)->get();
-        if (count($data) > 0) {
+        $danhMuc = DanhMuc::where('slug_danh_muc', $slug)->first();
+
+        if (!$danhMuc) {
             return response()->json([
-                'status'  => true,
-                'data'    => $data
-            ]);
-        } else {
-            return response()->json([
-                'status'     => false,
-                'message'    => "Danh mục không có bất kỳ sản phẩm nào"
-            ]);
+                'status' => false,
+                'message' => 'Không tìm thấy danh mục có slug: ' . $slug
+            ], 404);
         }
+
+        // Lấy tất cả ID con cháu của danh mục này
+        $ids = DanhMuc::getAllChildIds($danhMuc->id);
+
+        // Lấy sản phẩm thuộc danh mục này + con cháu
+        $sanPhams = SanPham::whereIn('id_danh_muc', $ids)->get();
+
+        return response()->json([
+            'status' => true,
+            'danh_muc' => $danhMuc,
+            'tong_san_pham' => $sanPhams->count(),
+            'data' => $sanPhams
+        ]);
     }
 
     public function layThongTinSanPham($id)

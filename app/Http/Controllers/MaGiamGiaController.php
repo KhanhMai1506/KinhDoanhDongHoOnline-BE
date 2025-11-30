@@ -23,23 +23,50 @@ class MaGiamGiaController extends Controller
 
     public function kiemTraMaGiamGia(Request $request)
     {
-        $maGiamGia = MaGiamGia::where('code', $request->code)
-            ->whereDate('ngay_bat_dau', "<=", Carbon::today())
-            ->whereDate('ngay_ket_thuc', ">=", Carbon::today())
-            ->where('tinh_trang', 1)
-            ->first();
-        if ($maGiamGia) {
+        $ma = $request->code;
+        $today = Carbon::today();
+
+        // Tìm mã giảm giá theo code trước
+        $maGiamGia = MaGiamGia::where('code', $ma)->first();
+
+        if (!$maGiamGia) {
             return response()->json([
-                'status' => true,
-                'coupon' => $maGiamGia,
+                'status' => false,
+                'message' => "Mã giảm giá không tồn tại.",
             ]);
-        } else {
+        }
+
+        // Nếu ngày bắt đầu chưa đến
+        if ($today->lt(Carbon::parse($maGiamGia->ngay_bat_dau))) {
+            return response()->json([
+                'status' => false,
+                'message' => "Mã giảm giá chưa được áp dụng.",
+            ]);
+        }
+
+        // Nếu đã hết hạn
+        if ($today->gt(Carbon::parse($maGiamGia->ngay_ket_thuc))) {
             return response()->json([
                 'status' => false,
                 'message' => "Mã giảm giá đã hết hạn.",
             ]);
         }
+
+        // Nếu mã đã bị vô hiệu hoá
+        if ($maGiamGia->tinh_trang != 1) {
+            return response()->json([
+                'status' => false,
+                'message' => "Mã giảm giá không còn hiệu lực.",
+            ]);
+        }
+
+        // Nếu hợp lệ
+        return response()->json([
+            'status' => true,
+            'coupon' => $maGiamGia,
+        ]);
     }
+
 
     public function getData()
     {

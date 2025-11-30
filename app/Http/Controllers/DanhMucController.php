@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DanhMuc;
+use App\Models\GioiTinh;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,10 +11,13 @@ class DanhMucController extends Controller
 {
     public function getDataOpen()
     {
-        $data = DanhMuc::where('tinh_trang', 1)->get();
+        $danhMucCha = DanhMuc::whereNull('id_cha')->get();
+        $danhMucCon = DanhMuc::whereNotNull('id_cha')->get();
 
         return response()->json([
-            'data' => $data
+            'status' => true,
+            'data' => $danhMucCha,
+            'data1' => $danhMucCon,
         ]);
     }
 
@@ -24,14 +28,14 @@ class DanhMucController extends Controller
         if ($danhMuc) {
             return response()->json([
                 'status' => true,
-                'data'   => ['id' => $danhMuc->id]
-            ]);
-        } else {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Không tìm thấy danh mục.'
+                'data' => $danhMuc,
             ]);
         }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Không tìm thấy danh mục.',
+        ]);
     }
 
     public function getData()
@@ -39,10 +43,14 @@ class DanhMucController extends Controller
         $login = Auth::guard('sanctum')->user();
         if ($login) {
             $data = DanhMuc::get();
+            $danhMucCha = DanhMuc::whereNull('id_cha')->get();
+            $danhMucCon = DanhMuc::whereNotNull('id_cha')->get();
 
             return response()->json([
                 'status' => true,
-                'data' => $data
+                'data' => $data,
+                'danhmuccha' => $danhMucCha,
+                'danhmuccon' => $danhMucCon
             ]);
         }
         return response()->json([
@@ -56,10 +64,11 @@ class DanhMucController extends Controller
         $login = Auth::guard('sanctum')->user();
         if ($login) {
             DanhMuc::create([
-                'ten_danh_muc' => $request->ten_danh_muc,
+                'ten_danh_muc'  => $request->ten_danh_muc,
                 'slug_danh_muc' => $request->slug_danh_muc,
                 'icon_danh_muc' => $request->icon_danh_muc,
-                'tinh_trang' => $request->tinh_trang,
+                'id_cha'        => $request->id_cha,
+                'tinh_trang'    => $request->tinh_trang,
             ]);
             return response()->json([
                 'status' => true,
@@ -160,5 +169,21 @@ class DanhMucController extends Controller
             'status' => false,
             'message' => 'Chưa đăng nhập hoặc token không hợp lệ'
         ], 401);
+    }
+
+    public function getDanhMucCon($slug)
+    {
+        $dmCha = DanhMuc::where('slug_danh_muc', $slug)->first();
+
+        if (!$dmCha) {
+            return response()->json(['status' => false, 'message' => 'Danh mục cha không tồn tại']);
+        }
+
+        $dmCon = DanhMuc::where('id_cha', $dmCha->id)->get();
+
+        return response()->json([
+            'status' => true,
+            'data'   => $dmCon,
+        ]);
     }
 }

@@ -6,31 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('san_phams', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_danh_muc')->nullable();
+            $table->unsignedBigInteger('id_danh_muc')->nullable(); // Liên kết danh mục
             $table->string('ten_san_pham');
             $table->integer('so_luong')->default(0);
             $table->text('hinh_anh');
-            $table->integer('tinh_trang');
-            $table->longText('mo_ta_ngan');
+            $table->integer('tinh_trang')->default(1); // 1: còn hàng
+            $table->longText('mo_ta_ngan')->nullable();
             $table->integer('gia_ban');
             $table->integer('phan_tram')->nullable();
             $table->integer('gia_khuyen_mai')->nullable();
             $table->integer('is_noi_bat')->default(0);
             $table->integer('is_flash_sale')->default(0);
             $table->timestamps();
+
+            $table->foreign('id_danh_muc')->references('id')->on('danh_mucs')->onDelete('set null');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('san_phams');

@@ -54,12 +54,13 @@ Route::middleware('KhachHangMiddleWare')->group(function () {
 });
 
 Route::get('/danh-muc/data-open', [DanhMucController::class, 'getDataOpen']);
+Route::get('/danh-muc-con/{slug}', [DanhMucController::class, 'getDanhMucCon']);
 
 Route::get('/san-pham/data-noi-bat', [SanPhamController::class, 'getDataNoiBat']);
 Route::get('/san-pham/data-flash-sale', [SanPhamController::class, 'getDataFlashSale']);
 
 Route::get('/slug-to-id/{slug}', [DanhMucController::class, 'layIdTuSlug']);
-Route::get('/san-pham-tu-danh-muc/{id}', [SanPhamController::class, 'laySanPhamTuDanhMuc']);
+Route::get('/san-pham-tu-danh-muc/{slug}', [SanPhamController::class, 'laySanPhamTuDanhMuc']);
 
 Route::get('/chi-tiet-san-pham/{id}', [SanPhamController::class, 'layThongTinSanPham']);
 Route::get('/san-pham-de-xuat/{id_san_pham}', [SanPhamController::class, 'laySanPhamDeXuat']);
