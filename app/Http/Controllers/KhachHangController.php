@@ -6,6 +6,7 @@ use App\Http\Requests\KhachHangDangKyRequest;
 use App\Http\Requests\KhachHangDangNhapRequest;
 use App\Http\Requests\KhachHangDoiMatKhauRequest;
 use App\Http\Requests\DoiMKKhachHang;
+use App\Http\Requests\QuenMatKhauRequest;
 use App\Mail\MasterMail;
 use App\Models\KhachHang;
 use Illuminate\Http\Request;
@@ -184,7 +185,6 @@ class KhachHangController extends Controller
     {
         $login = Auth::guard('sanctum')->user();
         if ($login) {
-            // Validate input
             $request->validate([
                 'ids' => 'required|array',
                 'ids.*' => 'integer|min:1'
@@ -433,7 +433,7 @@ class KhachHangController extends Controller
     {
         $khachHang = KhachHang::where('hash_reset', $request->id)->first();
         $khachHang->password   = bcrypt($request->password);
-        $khachHang->hash_reset = null; // xoá token reset sau khi dùng
+        $khachHang->hash_reset = null;
         $khachHang->save();
 
         return response()->json([

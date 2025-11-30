@@ -42,7 +42,7 @@ class KhachHangDangKyRequest extends FormRequest
             'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự',
             're_password.required' => 'Nhập lại mật khẩu không được để trống',
             're_password.min' => 'Nhập lại mật khẩu phải có ít nhất 6 ký tự',
-            're_password.same' => 'Nhập lại mật khẩu phải giống mật khẩu',
+            're_password.same' => 'Mật khẩu nhập lại không trùng khớp',
             'so_dien_thoai.required' => 'Số điện thoại không được để trống',
             'so_dien_thoai.digits' => 'Số điện thoại phải đủ 10 ký tự',
         ];
