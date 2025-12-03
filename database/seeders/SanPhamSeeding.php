@@ -44,7 +44,7 @@ class SanPhamSeeding extends Seeder
                 'Đồng Hồ Nam Seiko Presage Cocktail Grasshopper SSA441J1',
                 'https://image.donghohaitrieu.com/wp-content/uploads/2023/09/SSA441J1.jpg',
                 'Seiko Presage Cocktail Grasshopper SSA441J1 là mẫu đồng hồ sang trọng đáng sở hữu bởi: Thiết kế Open Heart (Trải nghiệm chuyển động cơ học đẳng cấp) – Bộ máy in-house 4R38 ổn định, chính xác cao – Màu sắc xanh lá (Grasshopper Cocktail).',
-                23434
+                2343400
             ),
             $this->sanPham(
                 5,
